@@ -18,7 +18,7 @@ a {
 }
 
 body {
-    color: #2d3943;
+    color: #181A1B;
     background: #f0f0f0;
     font-family: Play, sans-serif;
 }
@@ -31,7 +31,7 @@ body {
 }
 
 .row.dark {
-    background: #2d3943;
+    background: #181A1B;
     color: #f0f0f0;
 }
 
@@ -84,7 +84,7 @@ body {
 
 .title-verb {
     background: #f0f0f0;
-    color: #2d3943;
+    color: #181A1B;
     padding: 0 8px;
     border-radius: 2px;
 }
@@ -103,7 +103,7 @@ body {
 
 .paste-header {
     background: #f0f0f0;
-    color: #2d3943;
+    color: #181A1B;
     font-weight: bold;
     padding: 6px 10px;
     font-size: 18px;
@@ -341,7 +341,7 @@ body {
 }
 
 .method {
-    background: #2d3943;
+    background: #181A1B;
     color: #f0f0f0;
     padding: 2px 5px;
     border-radius: 2px;
@@ -355,7 +355,7 @@ body {
 
 .endpoint-table {
     margin: 12px 0 20px;
-    background: #2d3943;
+    background: #181A1B;
     color: #f0f0f0;
     border-radius: 2px;
 }
@@ -372,7 +372,7 @@ body {
 
 .answer {
     margin: 8px 0 16px;
-    background: #2d3943;
+    background: #181A1B;
     color: #f0f0f0;
     border-radius: 2px;
     padding: 16px;
@@ -665,4 +665,14 @@ body {
     .docs-icon {
         display: none;
     }
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #2B3033 !important;
+}
+::-webkit-scrollbar {
+    background-color: #181A1B !important
 }

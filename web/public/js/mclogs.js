@@ -1,4 +1,4 @@
-const titles = ["Paste", "Share", "Analyse"];
+var titles = ["Vlož", "Sdílej", "Analyzuj"];
 let currentTitle = 0;
 let speed = 30;
 let pause = 3000;
@@ -62,7 +62,7 @@ async function sendLog() {
             .substring(0, parseInt(pasteArea.dataset.maxLength))
             .split('\n').slice(0, parseInt(pasteArea.dataset.maxLines)).join('\n');
 
-        const response = await fetch(`${location.protocol}//api.${location.host}/1/log`, {
+        const response = await fetch(`${location.protocol}//api.mcnavody.eu/1/log`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"

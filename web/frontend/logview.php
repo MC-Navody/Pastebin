@@ -5,10 +5,10 @@ $id = new Id(substr($_SERVER['REQUEST_URI'], 1));
 $log = new Log($id);
 $shouldWrapLogLines = filter_var($_COOKIE["WRAP_LOG_LINES"] ?? "true", FILTER_VALIDATE_BOOLEAN);
 
-$title = "mclo.gs - Paste, share & analyse your Minecraft logs";
-$description = "Easily paste your Minecraft logs to share and analyse them.";
+$title = "Pastebin | MC Návody";
+$description = "Snadno vkládejte své logy z Minecraftu, sdílejte je a analyzujte.";
 if (!$log->exists()) {
-    $title = "Log not found - mclo.gs";
+    $title = "Log neexistuje | MC Návody";
     http_response_code(404);
 } else {
     $codexLog = $log->get();
@@ -17,10 +17,10 @@ if (!$log->exists()) {
     $problems = $analysis->getProblems();
     $title = $codexLog->getTitle() . " [#" . $id->get() . "]";
     $lineNumbers = $log->getLineNumbers();
-    $lineString = $lineNumbers === 1 ? "line" : "lines";
+    $lineString = $lineNumbers === 1 ? "řádek" : $lineString = $lineNumbers === 2 ? "řádky" : $lineString = $lineNumbers === 3 ? "řádky" : $lineString = $lineNumbers === 4 ? "řádky" : "řádků";
 
     $errorCount = $log->getErrorCount();
-    $errorString = $errorCount === 1 ? "error" : "errors";
+    $errorString = $errorCount === 1 ? "chyba" : $errorString = $errorCount === 2 ? "chyby" : $errorString = $errorCount === 3 ? "chyby" : $errorString = $errorCount === 4 ? "chyby" : "chyb";
 
     $description = $lineNumbers . " " . $lineString;
     if ($errorCount > 0) {
@@ -28,21 +28,30 @@ if (!$log->exists()) {
     }
 
     if (count($problems) > 0) {
-        $problemString = "problems";
+        $problemString = "problémů";
         if (count($problems) === 1) {
-            $problemString = "problem";
+            $problemString = "problém";
         }
-        $description .= " | " . count($problems) . " " . $problemString . " automatically detected";
+        if (count($problems) === 2) {
+            $problemString = "problémy";
+        }
+        if (count($problems) === 3) {
+            $problemString = "problémy";
+        }
+        if (count($problems) === 4) {
+            $problemString = "problémy";
+        }
+        $description .= " | " . count($problems) . " " . $problemString . " automaticky detekováno";
     }
 }
 ?><!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
     <head>
         <meta name="robots" content="noindex,nofollow">
         <meta charset="utf-8" />
-        <meta name="theme-color" content="#2d3943" />
+        <meta name="theme-color" content="#2ECC71" />
 
-        <title><?=$title; ?> - mclo.gs</title>
+        <title><?=$title; ?> | MC Návody</title>
 
         <base href="/" />
 
@@ -56,12 +65,6 @@ if (!$log->exists()) {
 
         <meta name="description" content="<?=$description; ?>">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="mclo.gs" />
-        <meta property="og:title" content="<?=$title; ?>" />
-        <meta property="og:description" content="<?=$description; ?>" />
-        <meta property="og:url" content="<?=$urls['baseUrl'] . "/" . $id->get(); ?>" />
 
         <script>
             let _paq = window._paq = window._paq || [];
@@ -83,20 +86,11 @@ if (!$log->exists()) {
                     <img src="img/logo.png" />
                 </a>
                 <div class="menu">
-                    <a class="menu-item" href="/#info">
-                        <i class="fa fa-info-circle"></i> Info
+                    <a class="menu-item" href="https://mcnavody.eu/">
+                        <i class="fa fa-book"></i> Wiki
                     </a>
-                    <a class="menu-item" href="/#plugin">
-                        <i class="fa fa-database"></i> Plugin
-                    </a>
-                    <a class="menu-item" href="/#mod">
-                        <i class="fa fa-puzzle-piece"></i> Mod
-                    </a>
-                    <a class="menu-item" href="/#api">
-                        <i class="fa fa-code"></i> API
-                    </a>
-                    <a class="menu-social btn btn-black btn-notext btn-large btn-no-margin" href="https://github.com/aternosorg/mclogs" target="_blank">
-                        <i class="fab fa-github"></i>
+                    <a class="menu-item" href="https://discord.mcnavody.eu/">
+                        <i class="fab fa-discord"></i> Discord
                     </a>
                 </div>
             </div>
@@ -122,13 +116,13 @@ if (!$log->exists()) {
                         </div>
                         <a class="btn btn-white btn-small btn-no-margin" id="raw" target="_blank" href="<?=$urls['apiBaseUrl'] . "/1/raw/". $id->get()?>">
                             <i class="fa fa-arrow-up-right-from-square"></i>
-                            Raw
+                            Bez formátování
                         </a>
                     </div>
                 </div>
                 <?php if(count($analysis) > 0): ?>
                     <div class="analysis">
-                        <div class="analysis-headline"><i class="fa fa-info-circle"></i> Analysis</div>
+                        <div class="analysis-headline"><i class="fa fa-info-circle"></i> Analýza</div>
                         <?php if(count($information) > 0): ?>
                             <div class="information-list">
                                 <?php foreach($information as $info): ?>
@@ -154,12 +148,12 @@ if (!$log->exists()) {
                                                 </div>
                                                 <?php $number = $problem->getEntry()[0]->getNumber(); ?>
                                                 <a href="/<?=$id->get() . "#L" . $number; ?>" class="btn btn-blue btn-no-margin btn-small" onclick="updateLineNumber('#L<?=$number; ?>');">
-                                                    <span class="hide-mobile"><i class="fa fa-arrow-right"></i> Line </span>#<?=$number; ?>
+                                                    <span class="hide-mobile"><i class="fa fa-arrow-right"></i> Řádek </span>#<?=$number; ?>
                                                 </a>
                                             </div>
                                             <div class="problem-body">
                                                 <div class="problem-solution-headline">
-                                                    Solutions
+                                                    Řešení
                                                 </div>
                                                 <div class="problem-solution-list">
                                                     <?php foreach($problem->getSolutions() as $solution): ?>
@@ -188,20 +182,20 @@ if (!$log->exists()) {
                     </div>
                     <div class="checkbox-container">
                         <input type="checkbox" id="wrap-checkbox"<?=$shouldWrapLogLines ? " checked" : ""?>/>
-                        <label for="wrap-checkbox">Wrap log lines</label>
+                        <label for="wrap-checkbox">Zalomit řádky logu</label>
                     </div>
                 </div>
                 <div class="log-notice">
-                    This log will be saved for 90 days from their last view.<br />
-                    <a href="mailto:<?=$legal['abuseEmail']?>?subject=Report%20mclo.gs/<?=$id->get(); ?>">Report abuse</a>
+                    Tento protokol bude uložen po dobu 90 dnů od jejich posledního zobrazení.<br />
+                <a href="mailto:podpora@mcnavody.eu?subject=Pastebin/<?=$id->get(); ?>">Nahlásit problém</a>
                 </div>
                 <?php else: ?>
                 <div class="not-found">
-                    <div class="not-found-title">404 - Log not found.</div>
-                    <div class="not-found-text">The log you try to open does not exist (anymore).<br />We automatically delete all logs that weren't opened in the last 90 days.</div>
+                    <div class="not-found-title">404 - Protokol nebyl nalezen.</div>
+                    <div class="not-found-text">Protokol, který se snažíte otevřít, již neexistuje.<br />Všechny protokoly, které nebyly otevřeny v posledních 90 dnech, automaticky mažeme.</div>
                     <div class="not-found-buttons">
                         <a href="/" class="btn btn-no-margin btn-blue btn-small">
-                            <i class="fa fa-home"></i> Paste a new log
+                            <i class="fa fa-home"></i> Vložit nový protokol
                         </a>
                     </div>
                 </div>
@@ -209,11 +203,9 @@ if (!$log->exists()) {
             </div>
         </div>
         <div class="row footer">
-            <div class="row-inner">
-                &copy; 2017-<?=date("Y"); ?> by mclo.gs - a service by <a target="_blank" href="https://aternos.org">Aternos</a> |
-                <a target="_blank" href="<?=$legal['imprint']?>">Imprint</a> |
-                <a target="_blank" href="<?=$legal['privacy']?>">Privacy</a>
-            </div>
+        <div class="row-inner">
+        MC Návody <?=date("Y"); ?>
+        </div>
         </div>
         <script src="js/logview.js?v=130221"></script>
     </body>

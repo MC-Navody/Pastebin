@@ -1,6 +1,6 @@
 .btn {
     line-height: 1;
-    border-radius: 2px;
+    border-radius: 7px;
     font-weight: bold;
     color: #f0f0f0;
     background: #2d3943;
@@ -132,7 +132,7 @@
 }
 
 .btn-green {
-    background-color: #1FD78D;
+    background-color: #2ecc71;
 }
 
 .btn-red {
