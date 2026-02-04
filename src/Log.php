@@ -50,12 +50,12 @@ class Log
         }
 
         return new static($id)
-            ->setContent($data->data ?? null)
-            ->setToken(isset($data->token) ? new Token($data->token) : null)
-            ->setMetadata(MetadataEntry::allFromArray($data->metadata ?? []))
-            ->setSource($data->source ?? null)
-            ->setCreated($data->created ?? null)
-            ->setExpires($data->expires ?? null);
+        ->setContent($data->data ?? null)
+        ->setToken(isset($data->token) ? new Token($data->token) : null)
+        ->setMetadata(MetadataEntry::allFromArray($data->metadata ?? []))
+        ->setSource($data->source ?? null)
+        ->setCreated($data->created ?? null)
+        ->setExpires($data->expires ?? null);
     }
 
     /**
@@ -69,10 +69,10 @@ class Log
     public static function create(string $content, array $metadata = [], ?string $source = null): static
     {
         return new static()
-            ->setMetadata($metadata)
-            ->setSource($source)
-            ->setToken(new Token())
-            ->save($content);
+        ->setMetadata($metadata)
+        ->setSource($source)
+        ->setToken(new Token())
+        ->save($content);
     }
 
     /**
@@ -258,7 +258,13 @@ class Log
     public function getLinesString(): string
     {
         $lineCount = $this->getLinesCount();
-        return $lineCount . ($lineCount === 1 ? " line" : " lines");
+        if ($lineCount === 1) {
+            return $lineCount . " řádek";
+        }
+        if ($lineCount >= 2 && $lineCount <= 4) {
+            return $lineCount . " řádky";
+        }
+        return $lineCount . " řádků";
     }
 
     /**
@@ -301,7 +307,13 @@ class Log
     public function getErrorsString(): string
     {
         $errorCount = $this->getErrorsCount();
-        return $errorCount . ($errorCount === 1 ? " error" : " errors");
+        if ($errorCount === 1) {
+            return $errorCount . " chyba";
+        }
+        if ($errorCount >= 2 && $errorCount <= 4) {
+            return $errorCount . " chyby";
+        }
+        return $errorCount . " chyb";
     }
 
     protected function generateId(): Id
@@ -327,12 +339,12 @@ class Log
 
         MongoDBClient::getInstance()->getLogsCollection()->insertOne([
             "_id" => $this->id->get(),
-            "data" => $content,
-            "token" => $this->token?->get(),
-            "source" => $this->source,
-            "metadata" => $this->metadata,
-            "expires" => $this->expires = $this->getExpiryTimestamp(),
-            "created" => $this->created = new UTCDateTime()
+                                                                     "data" => $content,
+                                                                     "token" => $this->token?->get(),
+                                                                     "source" => $this->source,
+                                                                     "metadata" => $this->metadata,
+                                                                     "expires" => $this->expires = $this->getExpiryTimestamp(),
+                                                                     "created" => $this->created = new UTCDateTime()
         ]);
 
         return $this->setContent($content);
@@ -411,8 +423,8 @@ class Log
     public function delete(): bool
     {
         return MongoDBClient::getInstance()->getLogsCollection()
-                ->deleteOne(['_id' => $this->id->get()])
-                ->getDeletedCount() === 1;
+        ->deleteOne(['_id' => $this->id->get()])
+        ->getDeletedCount() === 1;
     }
 
     /**
@@ -476,13 +488,24 @@ class Log
         }
 
         $problems = $this->getAnalysis()->getProblems();
+        $count = count($problems);
 
-        if (count($problems) > 0) {
-            $problemString = "problems";
-            if (count($problems) === 1) {
-                $problemString = "problem";
+        if ($count > 0) {
+            $suffix = "";
+
+            // Logika skloňování pro celou větu
+            if ($count === 1) {
+                // 1 problém automaticky detekován
+                $suffix = "problém automaticky detekován";
+            } elseif ($count >= 2 && $count <= 4) {
+                // 2-4 problémy automaticky detekovány
+                $suffix = "problémy automaticky detekovány";
+            } else {
+                // 5+ problémů automaticky detekováno
+                $suffix = "problémů automaticky detekováno";
             }
-            $description .= " | " . count($problems) . " " . $problemString . " automatically detected";
+
+            $description .= " | " . $count . " " . $suffix;
         }
 
         return $description;

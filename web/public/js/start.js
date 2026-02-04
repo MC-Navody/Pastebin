@@ -78,7 +78,7 @@ async function sendLog() {
             data = await response.json();
         } catch (e) {
             console.error("Failed to parse JSON returned by API", e);
-            showError("API returned invalid JSON");
+            showError("API vrátilo neplatný JSON");
             return;
         }
 
@@ -90,13 +90,13 @@ async function sendLog() {
 
         if (typeof data !== 'object' || !data.success || !data.id) {
             console.error(new Error("API returned an invalid response"), data);
-            showError("API returned an invalid response");
+            showError("API vrátilo neplatnou odpověď");
             return;
         }
 
         location.href = data.url;
     } catch (e) {
-        showError("Network error");
+        showError("Chyba sítě");
     }
 }
 
@@ -146,13 +146,13 @@ async function pasteFromClipboard() {
     try {
         let content = await navigator.clipboard.readText();
         if (!content || content.trim().length === 0) {
-            showError("Clipboard is empty.");
+            showError("Schránka je prázdná.");
             return;
         }
         pasteArea.value = content;
         reevaluateContentStatus();
     } catch (err) {
-        showError("Clipboard is empty or not accessible.");
+        showError("Schránka je prázdná nebo nedostupná.");
     }
 }
 
@@ -203,20 +203,20 @@ function readFile(file) {
 
 async function loadFileContents(file) {
     if (file.size > 1024 * 1024 * 100) {
-        showError(`File is too large.`);
+        showError(`Soubor je příliš velký.`);
         return;
     }
     let content = await readFile(file);
     if (file.name.endsWith('.gz')) {
         if (!isGzSupported()) {
-            showError(`Gzip files are not supported in this browser.`);
+            showError(`Gzip soubory nejsou v tomto prohlížeči podporovány.`);
             return;
         }
         content = await unpackGz(content);
     }
 
     if (content.includes(0)) {
-        showError(`This file is not supported.`);
+        showError(`Tento soubor není podporován.`);
         return;
     }
 

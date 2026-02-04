@@ -65,14 +65,7 @@ class URL
      */
     public static function getBase(): Uri
     {
-        if (static::$base) {
-            return static::$base;
-        }
-        $host = $_SERVER['HTTP_HOST'];
-        if (str_starts_with($host, static::API_SUBDOMAIN)) {
-            $host = substr($host, strlen(static::API_SUBDOMAIN));
-        }
-        return static::$base = new Uri(static::getProtocol() . "://" . $host);
+        return static::$base = new Uri("https://log.mcnavody.eu");
     }
 
     /**
@@ -82,11 +75,7 @@ class URL
      */
     public static function getApi(): Uri
     {
-        if (static::$api) {
-            return static::$api;
-        }
-        $base = static::getBase();
-        return static::$api = $base->withHost(static::API_SUBDOMAIN . $base->getHost());
+        return static::$api = new Uri("https://api.mcnavody.eu");
     }
 
     /**

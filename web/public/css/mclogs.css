@@ -176,12 +176,12 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image:
-        linear-gradient(color-mix(in srgb, var(--text-muted) 5%, var(--bg) 95%) 1px, transparent 1px),
-        linear-gradient(90deg, color-mix(in srgb, var(--text-muted) 5%, var(--bg) 95%) 1px, transparent 1px);
-    background-size: 40px 40px;
+    /* Kruhový gradient vytváří tečky */
+    background-image: radial-gradient(color-mix(in srgb, var(--text-muted) 15%, transparent) 1.5px, transparent 1.5px);
+    background-size: 40px 40px; /* Rozestup teček */
     pointer-events: none;
     z-index: 0;
+    opacity: 0.6; /* Jemná průhlednost */
 }
 
 /** Buttons **/
@@ -290,7 +290,7 @@ header {
 }
 
 .logo-icon {
-    height: clamp(1.5rem, 3vw, 2rem);
+    height: clamp(2.5rem, 5vw, 4rem);
     width: auto;
     margin-top: 3px;
     color: var(--accent);
@@ -1127,7 +1127,7 @@ main {
 .level-info .level-prefix,
 .level-notice .level-prefix,
 .level-debug .level-prefix {
-    color: var(--accent);
+    color: #70ADFF;
 }
 
 .level-warning {

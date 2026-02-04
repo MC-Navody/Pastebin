@@ -1,21 +1,15 @@
 <header>
-    <a href="<?=htmlspecialchars(\Aternos\Mclogs\Util\URL::getBase()->toString()); ?>" class="logo">
-        <svg class="logo-icon" width="41" height="42" viewBox="0 0 41 42" fill="none"
-             xmlns="http://www.w3.org/2000/svg">
-            <rect width="41" height="5" rx="2" fill="currentColor"/>
-            <rect y="9.25" width="33" height="5" rx="2" fill="currentColor"/>
-            <rect y="18.5" width="19" height="5" rx="2" fill="currentColor"/>
-            <rect y="27.75" width="33" height="5" rx="2" fill="currentColor"/>
-            <rect y="37" width="41" height="5" rx="2" fill="currentColor"/>
-        </svg>
-        <span class="logo-text"><?= htmlspecialchars(\Aternos\Mclogs\Config\Config::getInstance()->getName()); ?></span>
-    </a>
+<a href="<?=htmlspecialchars(\Aternos\Mclogs\Util\URL::getBase()->toString()); ?>" class="logo">
+<img src="img/logo.png" alt="Logo" height="42" class="logo-icon">
+
+<span class="logo-text"><?= htmlspecialchars(\Aternos\Mclogs\Config\Config::getInstance()->getName()); ?></span>
+</a>
     <div class="tagline">
-        <h1 class="tagline-main"><span class="title-verb">Paste</span> your logs.</h1>
-        <div class="tagline-sub">Built for Minecraft & Hytale</div>
+        <h1 class="tagline-main"><span class="title-verb">Vlož</span> své logy.</h1>
+        <div class="tagline-sub">Vytvořeno pro Minecraft a Hytale</div>
     </div>
     <script>
-        const titles = ["Paste", "Share", "Analyse"];
+        const titles = ["Vlož", "Sdílej", "Analyzuj"];
         let currentTitle = 0;
         let speed = 30;
         let pause = 3000;

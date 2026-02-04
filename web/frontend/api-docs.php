@@ -7,119 +7,120 @@ use Aternos\Mclogs\Util\URL;
 $config = Config::getInstance();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
     <head>
         <?php include __DIR__ . '/parts/head.php'; ?>
-        <title>API Documentation - <?= htmlspecialchars($config->getName()); ?></title>
-        <meta name="description" content="API documentation for <?= htmlspecialchars($config->getName()); ?> - Integrate log sharing directly into your server panel or hosting software." />
+        <title>API Dokumentace - <?= htmlspecialchars($config->getName()); ?></title>
+        <meta name="description" content="API dokumentace pro <?= htmlspecialchars($config->getName()); ?> - Integrujte sdílení logů přímo do svého server panelu nebo hostingového softwaru." />
+        <meta name="theme-color" content="#2ecc71" />
     </head>
     <body>
     <?php include __DIR__ . '/parts/header.php'; ?>
             <main>
                 <div class="api-docs-header">
                     <div class="api-docs-header-content">
-                        <h1>API Documentation</h1>
-                        <p>Integrate <strong><?= htmlspecialchars($config->getName()); ?></strong> directly into your server panel, your hosting software or anything else. This platform was built for high performance automation and can easily be integrated into any existing software via our HTTP API.</p>
+                        <h1>API Dokumentace</h1>
+                        <p>Integrujte <strong><?= htmlspecialchars($config->getName()); ?></strong> přímo do svého server panelu, hostingového softwaru nebo čehokoliv jiného. Tato platforma byla vytvořena pro vysoce výkonnou automatizaci a lze ji snadno integrovat do jakéhokoli existujícího softwaru prostřednictvím našeho HTTP API.</p>
                     </div>
                 </div>
                 <div class="api-docs-toc">
-                    <h3>Quick Links</h3>
+                    <h3>Rychlé odkazy</h3>
                     <nav class="api-docs-toc-nav">
-                        <a href="#create-log">Create a log</a>
-                        <a href="#get-log-info">Get log info and content</a>
-                        <a href="#delete-log">Delete a log</a>
+                        <a href="#create-log">Vytvořit log</a>
+                        <a href="#get-log-info">Získat informace a obsah</a>
+                        <a href="#delete-log">Smazat log</a>
                     </nav>
                 </div>
                 <div class="api-docs-section" id="create-log">
-                    <h2>Create a log</h2>
+                    <h2>Vytvořit log</h2>
 
                     <div class="api-endpoint">
                         <span class="api-method">POST</span> <span class="api-url"><?= htmlspecialchars(URL::getApi()->withPath("/1/log")->toString()); ?></span> <span class="content-type">application/json</span>
                     </div>
                     <div class="api-note">
-                        Posting content with the content type <span class="content-type">application/x-www-form-urlencoded</span> is still supported for backwards compatibility, but does not support setting metadata.
+                        Odesílání obsahu s typem <span class="content-type">application/x-www-form-urlencoded</span> je stále podporováno z důvodu zpětné kompatibility, ale nepodporuje nastavení metadat.
                     </div>
                     <table class="api-table">
                         <tr>
-                            <th>Field</th>
-                            <th>Required</th>
-                            <th>Type</th>
-                            <th>Description</th>
+                            <th>Pole</th>
+                            <th>Povinné</th>
+                            <th>Typ</th>
+                            <th>Popis</th>
                         </tr>
                         <tr>
                             <td class="api-field">content</td>
                             <td class="api-required required"><i class="fa-solid fa-square-check"></i></td>
                             <td class="api-type">string</td>
                             <td class="api-description">
-                                The raw log file content as string.
-                                Limited to <?= number_format($config->get(ConfigKey::STORAGE_LIMIT_BYTES) / 1024 / 1024, 2); ?> MiB and <?= number_format($config->get(ConfigKey::STORAGE_LIMIT_LINES)); ?> lines.
-                                Will be truncated if possible and necessary, but truncating on the client side is recommended.
+                                Hrubý obsah souboru logu jako řetězec.
+                                Omezeno na <?= number_format($config->get(ConfigKey::STORAGE_LIMIT_BYTES) / 1024 / 1024, 2); ?> MiB a <?= number_format($config->get(ConfigKey::STORAGE_LIMIT_LINES)); ?> řádků.
+                                Pokud to bude nutné, obsah bude zkrácen, ale doporučuje se zkracování provádět na straně klienta.
                             </td>
                         </tr>
                         <tr>
                             <td class="api-field">source</td>
                             <td class="api-required"><i class="fa-solid fa-square-xmark"></i></td>
                             <td class="api-type">string</td>
-                            <td class="api-description">The name of the source, e.g. a domain or software name.</td>
+                            <td class="api-description">Název zdroje, např. doména nebo název softwaru.</td>
                         </tr>
                         <tr>
                             <td class="api-field">metadata</td>
                             <td class="api-required"><i class="fa-solid fa-square-xmark"></i></td>
                             <td class="api-type">array</td>
-                            <td class="api-description">An array of metadata entries.</td>
+                            <td class="api-description">Pole položek metadat.</td>
                         </tr>
                     </table>
 
-                    <h3>Example body <span class="content-type">application/json</span></h3>
+                    <h3>Příklad těla požadavku <span class="content-type">application/json</span></h3>
                     <pre class="api-code">{
-    "content": "[log file content...]",
+    "content": "[obsah log souboru...]",
     "source": "example.org"
 }</pre>
 
                     <h3>Metadata</h3>
                     <p>
-                        You can send metadata alongside the log content to be displayed on the log page and/or be read by other applications through this API.
-                        This is entirely optional, but can help to provide additional context, e.g. internal server IDs, software versions etc.
+                        Společně s obsahem logu můžete odeslat metadata, která se zobrazí na stránce logu a/nebo budou čitelná pro jiné aplikace prostřednictvím tohoto API.
+                        To je zcela volitelné, ale může to pomoci poskytnout další kontext, např. interní ID serveru, verze softwaru atd.
                     </p>
                     <p>
-                        A metadata entry is an object with the following fields:
+                        Položka metadat je objekt s následujícími poli:
                     </p>
                     <table class="api-table">
                         <tr>
-                            <th>Field</th>
-                            <th>Required</th>
-                            <th>Type</th>
-                            <th>Description</th>
+                            <th>Pole</th>
+                            <th>Povinné</th>
+                            <th>Typ</th>
+                            <th>Popis</th>
                         </tr>
                         <tr>
                             <td class="api-field">key</td>
                             <td class="api-required required"><i class="fa-solid fa-square-check"></i></td>
                             <td class="api-type">string</td>
-                            <td class="api-description">The metadata key. Can be used to identify the entry in your code later.</td>
+                            <td class="api-description">Klíč metadat. Lze použít k pozdější identifikaci položky ve vašem kódu.</td>
                         </tr>
                         <tr>
                             <td class="api-field">value</td>
                             <td class="api-required required"><i class="fa-solid fa-square-check"></i></td>
                             <td class="api-type">string|int|float|bool|null</td>
-                            <td class="api-description">The metadata value.</td>
+                            <td class="api-description">Hodnota metadat.</td>
                         </tr>
                         <tr>
                             <td class="api-field">label</td>
                             <td class="api-required"><i class="fa-solid fa-square-xmark"></i></td>
                             <td class="api-type">string</td>
-                            <td class="api-description">The display label. If not provided, the key will be used as label.</td>
+                            <td class="api-description">Zobrazovaný popisek. Pokud není uveden, použije se jako popisek klíč.</td>
                         </tr>
                         <tr>
                             <td class="api-field">visible</td>
                             <td class="api-required"><i class="fa-solid fa-square-xmark"></i></td>
                             <td class="api-type">bool</td>
-                            <td class="api-description">Whether this metadata should be visible on the log page or is only available through the API. Default is true.</td>
+                            <td class="api-description">Zda mají být tato metadata viditelná na stránce logu, nebo dostupná pouze přes API. Výchozí je true.</td>
                         </tr>
                     </table>
 
-                    <h3>Example body with metadata <span class="content-type">application/json</span></h3>
+                    <h3>Příklad těla s metadaty <span class="content-type">application/json</span></h3>
                     <pre class="api-code">{
-    "content": "[log file content...]",
+    "content": "[obsah log souboru...]",
     "source": "example.org",
     "metadata": [
         {
@@ -130,16 +131,16 @@ $config = Config::getInstance();
         {
             "key": "software_version",
             "value": "1.2.3",
-            "label": "Software Version",
+            "label": "Verze Softwaru",
             "visible": true
         }
     ]
 }</pre>
 
-                    <h3>Responses</h3>
-                    <h4>Success <span class="content-type">application/json</span></h4>
+                    <h3>Odpovědi</h3>
+                    <h4>Úspěch <span class="content-type">application/json</span></h4>
                     <div class="api-note">
-                        The token provided in this response can be used to delete this log later. Store or discard it securely, it will not be shown again.
+                        Token poskytnutý v této odpovědi lze později použít ke smazání tohoto logu. Uložte jej bezpečně nebo jej zahoďte, znovu se již nezobrazí.
                     </div>
                     <pre class="api-code">{
     "success":true,
@@ -162,12 +163,12 @@ $config = Config::getInstance();
         {
             "key": "software_version",
             "value": "1.2.3",
-            "label": "Software Version",
+            "label": "Verze Softwaru",
             "visible": true
         }
     ]
 }</pre>
-                    <h4>Error <span class="content-type">application/json</span></h4>
+                    <h4>Chyba <span class="content-type">application/json</span></h4>
                     <pre class="api-code">
 {
     "success": false,
@@ -176,42 +177,42 @@ $config = Config::getInstance();
                 </div>
 
                 <div class="api-docs-section" id="get-log-info">
-                    <h2>Get log info and content</h2>
+                    <h2>Získat informace a obsah logu</h2>
                     <div class="api-endpoint">
                         <span class="api-method">GET</span> <span class="api-url"><?= htmlspecialchars(URL::getApi()->toString()); ?>/1/log/[id]</span>
                     </div>
                     <p>
-                        This endpoint only returns the log info and metadata by default (same response as creating a log), you can also get the content in the same request by enabling it in different
-                        formats using GET parameters. You can combine multiple parameters to get multiple content formats in one request, but keep in mind that this will
-                        increase the response size.
+                        Tento koncový bod (endpoint) ve výchozím nastavení vrací pouze informace o logu a metadata (stejná odpověď jako při vytvoření logu).
+                        V rámci stejného požadavku můžete získat i obsah v různých formátech povolením příslušných GET parametrů.
+                        Můžete kombinovat více parametrů a získat tak více formátů obsahu najednou, mějte ale na paměti, že to zvětší velikost odpovědi.
                     </p>
                     <table class="api-table">
                         <tr>
-                            <th>GET Parameter</th>
-                            <th>Response field</th>
-                            <th>Description</th>
+                            <th>GET Parametr</th>
+                            <th>Pole v odpovědi</th>
+                            <th>Popis</th>
                         </tr>
                         <tr>
                             <td class="api-field">raw</td>
                             <td class="api-type">content.raw</td>
-                            <td class="api-description">Includes the raw log content as string in the response.</td>
+                            <td class="api-description">Zahrne do odpovědi hrubý obsah logu jako řetězec.</td>
                         </tr>
                         <tr>
                             <td class="api-field">parsed</td>
                             <td class="api-type">content.parsed</td>
-                            <td class="api-description">Includes the parsed log content as array/objects in the response.</td>
+                            <td class="api-description">Zahrne do odpovědi zpracovaný obsah logu jako pole/objekty.</td>
                         </tr>
                         <tr>
                             <td class="api-field">insights</td>
                             <td class="api-type">content.insights</td>
-                            <td class="api-description">Includes the automatically detected insights in the response.</td>
+                            <td class="api-description">Zahrne do odpovědi automaticky detekovanou analýzu (problémy/informace).</td>
                         </tr>
                     </table>
-                    <h3>Responses</h3>
-                    <h4>Success <span class="content-type">application/json</span></h4>
+                    <h3>Odpovědi</h3>
+                    <h4>Úspěch <span class="content-type">application/json</span></h4>
                     <div class="api-note">
-                        All content fields are only included if the corresponding GET parameter is provided.
-                        If no content parameter is provided, the entire content object is omitted from the response.
+                        Všechna pole obsahu jsou zahrnuta pouze v případě, že je zadán odpovídající parametr GET.
+                        Pokud není zadán žádný parametr obsahu, celý objekt obsahu je z odpovědi vynechán.
                     </div>
                     <pre class="api-code">{
     "success":true,
@@ -233,17 +234,17 @@ $config = Config::getInstance();
         {
             "key": "software_version",
             "value": "1.2.3",
-            "label": "Software Version",
+            "label": "Verze Softwaru",
             "visible": true
         }
     ],
     "content": {
-        "raw": "[log file content...]",
-        "parsed": [ /* parsed log entries */ ],
-        "insights": { "problems": [ /* detected problems */ ], "information": [ /* detected information */ ] }
+        "raw": "[obsah log souboru...]",
+        "parsed": [ /* zpracované položky logu */ ],
+        "insights": { "problems": [ /* detekované problémy */ ], "information": [ /* detekované informace */ ] }
     }
 }</pre>
-                    <h4>Error <span class="content-type">application/json</span></h4>
+                    <h4>Chyba <span class="content-type">application/json</span></h4>
                     <pre class="api-code">
 {
     "success": false,
@@ -251,35 +252,35 @@ $config = Config::getInstance();
 }</pre>
                 </div>
                 <div class="api-docs-section" id="delete-log">
-                    <h2>Delete a log</h2>
+                    <h2>Smazat log</h2>
                     <div class="api-note">
-                        Deleting a log requires the token that was provided when creating the log.
+                        Smazání logu vyžaduje token, který byl poskytnut při jeho vytvoření.
                     </div>
 
                     <div class="api-endpoint">
                         <span class="api-method">DELETE</span> <span class="api-url"><?= htmlspecialchars(URL::getApi()->toString()); ?>/1/log/[id]</span>
                     </div>
 
-                    <h3>Headers</h3>
+                    <h3>Hlavičky (Headers)</h3>
                     <table class="api-table">
                         <tr>
-                            <th>Header</th>
-                            <th>Example</th>
-                            <th>Description</th>
+                            <th>Hlavička</th>
+                            <th>Příklad</th>
+                            <th>Popis</th>
                         </tr>
                         <tr>
                             <td class="api-field">Authorization</td>
                             <td class="api-type">Authorization: Bearer 78351fafe495398163f...</td>
-                            <td class="api-description">The type (always "Bearer") and the log token received when creating the log.</td>
+                            <td class="api-description">Typ (vždy "Bearer") a token logu obdržený při jeho vytvoření.</td>
                         </tr>
                     </table>
 
-                    <h3>Responses</h3>
-                    <h4>Success <span class="content-type">application/json</span></h4>
+                    <h3>Odpovědi</h3>
+                    <h4>Úspěch <span class="content-type">application/json</span></h4>
                     <pre class="api-code">{
     "success": true
 }</pre>
-                    <h4>Error <span class="content-type">application/json</span></h4>
+                    <h4>Chyba <span class="content-type">application/json</span></h4>
                     <pre class="api-code">
 {
     "success": false,
@@ -287,34 +288,34 @@ $config = Config::getInstance();
 }</pre>
                 </div>
                 <div class="api-docs-section" id="get-raw">
-                    <h2>Get the raw log file content</h2>
+                    <h2>Získat hrubý obsah logu</h2>
                     <div class="api-note">
-                        Only use this endpoint if you really only need the raw log content. For most use cases, getting the log info and content together from the log endpoint is recommended.
+                        Tento koncový bod použijte pouze v případě, že opravdu potřebujete jen hrubý obsah logu. Pro většinu případů se doporučuje získat informace a obsah společně z endpointu pro log.
                     </div>
                     <div class="api-endpoint">
                         <span class="api-method">GET</span> <span class="api-url"><?= htmlspecialchars(URL::getApi()->toString()); ?>/1/raw/[id]</span>
                     </div>
                     <table class="api-table">
                         <tr>
-                            <th>Field</th>
-                            <th>Type</th>
-                            <th>Description</th>
+                            <th>Pole</th>
+                            <th>Typ</th>
+                            <th>Popis</th>
                         </tr>
                         <tr>
                             <td class="api-field">[id]</td>
                             <td class="api-type">string</td>
-                            <td class="api-description">The log file id, received from the paste endpoint or from a URL (<?= htmlspecialchars(URL::getBase()->toString()); ?>/[id]).</td>
+                            <td class="api-description">ID log souboru, získané z endpointu pro vložení nebo z URL (<?= htmlspecialchars(URL::getBase()->toString()); ?>/[id]).</td>
                         </tr>
                     </table>
 
-                    <h3>Success <span class="content-type">text/plain</span></h3>
+                    <h3>Úspěch <span class="content-type">text/plain</span></h3>
                     <pre class="api-code">
 [18:25:33] [Server thread/INFO]: Starting minecraft server version 1.16.2
 [18:25:33] [Server thread/INFO]: Loading properties
 [18:25:34] [Server thread/INFO]: Default game type: SURVIVAL
 ...
 </pre>
-                    <h3>Error <span class="content-type">application/json</span></h3>
+                    <h3>Chyba <span class="content-type">application/json</span></h3>
                     <pre class="api-code">
 {
     "success": false,
@@ -322,71 +323,71 @@ $config = Config::getInstance();
 }</pre>
                 </div>
                 <div class="api-docs-section" id="get-insights">
-                    <h2>Get insights</h2>
+                    <h2>Získat analýzu (Insights)</h2>
                     <div class="api-note">
-                        This endpoint is mainly kept for backwards compatibility. For new applications, getting the insights together with the log info from the log endpoint is recommended.
+                        Tento koncový bod je ponechán hlavně kvůli zpětné kompatibilitě. U nových aplikací se doporučuje získávat analýzu společně s informacemi o logu z hlavního endpointu.
                     </div>
                     <div class="api-endpoint">
                         <span class="api-method">GET</span> <span class="api-url"><?= htmlspecialchars(URL::getApi()->toString()); ?>/1/insights/[id]</span>
                     </div>
                     <table class="api-table">
                         <tr>
-                            <th>Field</th>
-                            <th>Type</th>
-                            <th>Description</th>
+                            <th>Pole</th>
+                            <th>Typ</th>
+                            <th>Popis</th>
                         </tr>
                         <tr>
                             <td class="api-field">[id]</td>
                             <td class="api-type">string</td>
-                            <td class="api-description">The log file id, received from the paste endpoint or from a URL (<?= htmlspecialchars(URL::getBase()->toString()); ?>/[id]).</td>
+                            <td class="api-description">ID log souboru, získané z endpointu pro vložení nebo z URL (<?= htmlspecialchars(URL::getBase()->toString()); ?>/[id]).</td>
                         </tr>
                     </table>
 
-                    <h3>Success <span class="content-type">application/json</span></h3>
+                    <h3>Úspěch <span class="content-type">application/json</span></h3>
                     <pre class="api-code">
 {
   "id": "name/type",
-  "name": "Software name, e.g. Vanilla",
-  "type": "Type name, e.g. Server Log",
-  "version": "Version, e.g. 1.12.2",
-  "title": "Combined title, e.g. Vanilla 1.12.2 Server Log",
+  "name": "Název softwaru, např. Vanilla",
+  "type": "Název typu, např. Server Log",
+  "version": "Verze, např. 1.12.2",
+  "title": "Kombinovaný název, např. Vanilla 1.12.2 Server Log",
   "analysis": {
     "problems": [
       {
-        "message": "A message explaining the problem.",
+        "message": "Zpráva vysvětlující problém.",
         "counter": 1,
         "entry": {
           "level": 6,
           "time": null,
-          "prefix": "The prefix of this entry, usually the part containing time and loglevel.",
+          "prefix": "Prefix tohoto záznamu, obvykle část obsahující čas a úroveň logu.",
           "lines": [
             {
               "number": 1,
-              "content": "The full content of the line."
+              "content": "Celý obsah řádku."
             }
           ]
         },
         "solutions": [
           {
-            "message": "A message explaining a possible solution."
+            "message": "Zpráva vysvětlující možné řešení."
           }
         ]
       }
     ],
     "information": [
       {
-        "message": "Label: value",
+        "message": "Popisek: hodnota",
         "counter": 1,
-        "label": "The label of this information, e.g. Minecraft version",
-        "value": "The value of this information, e.g. 1.12.2",
+        "label": "Popisek této informace, např. Verze Minecraftu",
+        "value": "Hodnota této informace, např. 1.12.2",
         "entry": {
           "level": 6,
           "time": null,
-          "prefix": "The prefix of this entry, usually the part containing time and loglevel.",
+          "prefix": "Prefix tohoto záznamu, obvykle část obsahující čas a úroveň logu.",
           "lines": [
             {
               "number": 6,
-              "content": "The full content of the line."
+              "content": "Celý obsah řádku."
             }
           ]
         }
@@ -394,7 +395,7 @@ $config = Config::getInstance();
     ]
   }
 }</pre>
-                    <h3>Error <span class="content-type">application/json</span></h3>
+                    <h3>Chyba <span class="content-type">application/json</span></h3>
                     <pre class="api-code">
 {
     "success": false,
@@ -402,10 +403,10 @@ $config = Config::getInstance();
 }</pre>
                 </div>
                 <div class="api-docs-section" id="analyse">
-                    <h2>Analyse a log without saving it</h2>
+                    <h2>Analyzovat log bez uložení</h2>
                     <p>
-                        If you only want to use the analysis features of this service without saving the log, you can use this endpoint.
-                        Please do not save logs that you only want to analyse, as this wastes storage space and resources.
+                        Pokud chcete využít pouze funkce analýzy této služby bez uložení logu, můžete použít tento koncový bod.
+                        Prosím, neukládejte logy, které chcete pouze analyzovat, protože to plýtvá úložným prostorem a zdroji.
                     </p>
 
                     <div class="api-endpoint">
@@ -413,62 +414,62 @@ $config = Config::getInstance();
                     </div>
                     <table class="api-table">
                         <tr>
-                            <th>Field</th>
-                            <th>Type</th>
-                            <th>Description</th>
+                            <th>Pole</th>
+                            <th>Typ</th>
+                            <th>Popis</th>
                         </tr>
                         <tr>
                             <td class="api-field">content</td>
                             <td class="api-type">string</td>
-                            <td class="api-description">The raw log file content as string. Maximum length is 10MiB and 25k lines, will be shortened if necessary.</td>
+                            <td class="api-description">Hrubý obsah souboru logu jako řetězec. Maximální délka je 10MiB a 25 tisíc řádků, v případě potřeby bude zkrácen.</td>
                         </tr>
                     </table>
 
-                    <h3>Success <span class="content-type">application/json</span></h3>
+                    <h3>Úspěch <span class="content-type">application/json</span></h3>
                     <pre class="api-code">
 {
   "id": "name/type",
-  "name": "Software name, e.g. Vanilla",
-  "type": "Type name, e.g. Server Log",
-  "version": "Version, e.g. 1.12.2",
-  "title": "Combined title, e.g. Vanilla 1.12.2 Server Log",
+  "name": "Název softwaru, např. Vanilla",
+  "type": "Název typu, např. Server Log",
+  "version": "Verze, např. 1.12.2",
+  "title": "Kombinovaný název, např. Vanilla 1.12.2 Server Log",
   "analysis": {
     "problems": [
       {
-        "message": "A message explaining the problem.",
+        "message": "Zpráva vysvětlující problém.",
         "counter": 1,
         "entry": {
           "level": 6,
           "time": null,
-          "prefix": "The prefix of this entry, usually the part containing time and loglevel.",
+          "prefix": "Prefix tohoto záznamu, obvykle část obsahující čas a úroveň logu.",
           "lines": [
             {
               "number": 1,
-              "content": "The full content of the line."
+              "content": "Celý obsah řádku."
             }
           ]
         },
         "solutions": [
           {
-            "message": "A message explaining a possible solution."
+            "message": "Zpráva vysvětlující možné řešení."
           }
         ]
       }
     ],
     "information": [
       {
-        "message": "Label: value",
+        "message": "Popisek: hodnota",
         "counter": 1,
-        "label": "The label of this information, e.g. Minecraft version",
-        "value": "The value of this information, e.g. 1.12.2",
+        "label": "Popisek této informace, např. Verze Minecraftu",
+        "value": "Hodnota této informace, např. 1.12.2",
         "entry": {
           "level": 6,
           "time": null,
-          "prefix": "The prefix of this entry, usually the part containing time and loglevel.",
+          "prefix": "Prefix tohoto záznamu, obvykle část obsahující čas a úroveň logu.",
           "lines": [
             {
               "number": 6,
-              "content": "The full content of the line."
+              "content": "Celý obsah řádku."
             }
           ]
         }
@@ -476,7 +477,7 @@ $config = Config::getInstance();
     ]
   }
 }</pre>
-                    <h3>Error <span class="content-type">application/json</span></h3>
+                    <h3>Chyba <span class="content-type">application/json</span></h3>
                     <pre class="api-code">
 {
     "success": false,
@@ -484,12 +485,12 @@ $config = Config::getInstance();
 }</pre>
                 </div>
                 <div class="api-docs-section" id="check-limits">
-                    <h2>Check storage limits</h2>
+                    <h2>Zkontrolovat limity úložiště</h2>
 
                     <div class="api-endpoint">
                         <span class="api-method">GET</span> <span class="api-url"><?= htmlspecialchars(URL::getApi()->withPath("/1/limits")->toString()); ?></span>
                     </div>
-                    <h3>Success <span class="content-type">application/json</span></h3>
+                    <h3>Úspěch <span class="content-type">application/json</span></h3>
                     <pre class="api-code">
 {
   "storageTime": 7776000,
@@ -498,83 +499,72 @@ $config = Config::getInstance();
 }</pre>
                     <table class="api-table">
                         <tr>
-                            <th>Field</th>
-                            <th>Type</th>
-                            <th>Description</th>
+                            <th>Pole</th>
+                            <th>Typ</th>
+                            <th>Popis</th>
                         </tr>
                         <tr>
                             <td class="api-field">storageTime</td>
                             <td class="api-type">integer</td>
-                            <td class="api-description">The duration in seconds that a log is stored for after the last view.</td>
+                            <td class="api-description">Doba v sekundách, po kterou je log uložen od posledního zobrazení.</td>
                         </tr>
                         <tr>
                             <td class="api-field">maxLength</td>
                             <td class="api-type">integer</td>
-                            <td class="api-description">Maximum file length in bytes. Logs over this limit will be truncated to this length.</td>
+                            <td class="api-description">Maximální délka souboru v bajtech. Logy přesahující tento limit budou zkráceny.</td>
                         </tr>
                         <tr>
                             <td class="api-field">maxLines</td>
                             <td class="api-type">integer</td>
-                            <td class="api-description">Maximum number of lines. Additional lines will be removed.</td>
+                            <td class="api-description">Maximální počet řádků. Řádky navíc budou odstraněny.</td>
                         </tr>
                     </table>
                 </div>
                 <div class="api-docs-section" id="check-limits">
-                    <h2>Get filters</h2>
+                    <h2>Získat filtry</h2>
                     <p>
-                        Filters modify the log content before storing it. They are applied automatically when creating a new log on the server side.
-                        You can get a list of active filters from this endpoint if you want to apply the same filters on the client side before uploading a log.
+                        Filtry upravují obsah logu před jeho uložením. Aplikují se automaticky při vytváření nového logu na straně serveru.
+                        Z tohoto koncového bodu můžete získat seznam aktivních filtrů, pokud chcete aplikovat stejné filtry na straně klienta před odesláním logu.
                     </p>
                     <div class="api-endpoint">
                         <span class="api-method">GET</span> <span class="api-url"><?= htmlspecialchars(URL::getApi()->withPath("/1/filters")->toString()); ?></span>
                     </div>
-                    <h3>Success <span class="content-type">application/json</span></h3>
+                    <h3>Úspěch <span class="content-type">application/json</span></h3>
                     <pre class="api-code">
 <?=htmlspecialchars(json_encode(\Aternos\Mclogs\Filter\Filter::getAll(), JSON_PRETTY_PRINT)); ?></pre>
-                    <h3>Filter types</h3>
+                    <h3>Typy filtrů</h3>
                     <table class="api-table">
                         <tr>
-                            <th>Type</th>
-                            <th>Description</th>
+                            <th>Typ</th>
+                            <th>Popis</th>
                         </tr>
                         <tr>
                             <td class="api-field">trim</td>
                             <td class="api-description">
-                                Trim any whitespace characters from the beginning and end of the log content.
+                                Odstraní bílé znaky ze začátku a konce obsahu logu.
                             </td>
                         </tr>
                         <tr>
                             <td class="api-field">limit-bytes</td>
                             <td class="api-description">
-                                Limit the log content to a maximum number of bytes (data.limit). Content exceeding this limit will be truncated.
+                                Omezí obsah logu na maximální počet bajtů (data.limit). Obsah přesahující tento limit bude zkrácen.
                             </td>
                         </tr>
                         <tr>
                             <td class="api-field">limit-lines</td>
                             <td class="api-description">
-                                Limit the log content to a maximum number of lines (data.limit). Additional lines will be removed.
+                                Omezí obsah logu na maximální počet řádků (data.limit). Řádky navíc budou odstraněny.
                             </td>
                         </tr>
                         <tr>
                             <td class="api-field">regex</td>
                             <td class="api-description">
-                                Apply regular expression replacements to the log content. Each pattern in data.patterns will be applied in order and replaced with the provided replacement, unless the matched string matches one of the exemption patterns in data.exemptions.
+                                Aplikuje nahrazení regulárních výrazů na obsah logu. Každý vzor v data.patterns bude aplikován v pořadí a nahrazen poskytnutou náhradou, pokud shodný řetězec neodpovídá jednomu z výjimek v data.exemptions.
                             </td>
                         </tr>
                     </table>
                     <div class="api-note">
-                        Make sure to handle any filter error, e.g. unknown filter types gracefully, as new filter types may be added in the future.
-                    </div>
-                </div>
-                <div class="api-docs-notes">
-                    <div class="api-docs-notes-content">
-                        <h2>Notes</h2>
-                        <p>The API has currently a rate limit of 60 requests per minute per IP address. This is set to ensure the operability of this service. If you have any use case that requires a higher limit, feel free to contact us.</p>
-                        <div class="api-docs-notes-actions">
-                            <a class="btn btn-small" href="mailto:matthias@aternos.org">
-                                <i class="fa-solid fa-envelope"></i> Contact via mail
-                            </a>
-                        </div>
+                        Ujistěte se, že chyby filtrů (např. neznámé typy filtrů) zpracováváte elegantně, protože v budoucnu mohou být přidány nové typy filtrů.
                     </div>
                 </div>
             </main>
