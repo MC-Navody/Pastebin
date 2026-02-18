@@ -27,6 +27,9 @@ $privacyUrl = Config::getInstance()->get(ConfigKey::LEGAL_PRIVACY);
         <a href="https://discord.mcnavody.eu/" title="Náš Discord server" target="_blank">
             <i class="fa-brands fa-discord"></i> Discord
         </a>
+        <a href="https://mcnavody.eu/gdpr/" title="Ochrana osobních údajů (GDPR)" target="_blank">
+            <i class="fa-solid fa-shield-halved"></i> GDPR
+        </a>
         <a href="<?=htmlspecialchars(URL::getApi()->toString()); ?>" title="API">
             <i class="fa-solid fa-code"></i> API
         </a>
