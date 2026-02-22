@@ -40,22 +40,50 @@ class Log
      * Find a log by its id
      *
      * @param Id $id
+     * @param bool $includeContent
      * @return static|null
      */
-    public static function find(Id $id): ?static
+    public static function find(Id $id, bool $includeContent = true): ?static
     {
-        $data = MongoDBClient::getInstance()->findLog($id);
+        $data = MongoDBClient::getInstance()->findLog($id, $includeContent);
         if ($data === null) {
             return null;
         }
 
+        return static::fromObject($id, $data);
+    }
+
+    /**
+     * @param (string|Id)[] $ids
+     * @param bool $includeContent
+     * @return array<string, Log>
+     */
+    public static function findAll(array $ids, bool $includeContent = true): array
+    {
+        $ids = array_map(fn($id) => (string)$id, $ids);
+        $objects = MongoDBClient::getInstance()->findLogs($ids, $includeContent);
+        $logs = [];
+        foreach ($objects as $data) {
+            $id = new Id($data->_id);
+            $logs[$id->get()] = static::fromObject($id, $data);
+        }
+        return $logs;
+    }
+
+    /**
+     * @param Id $id
+     * @param object $data
+     * @return static
+     */
+    protected static function fromObject(Id $id, object $data): static
+    {
         return new static($id)
-        ->setContent($data->data ?? null)
-        ->setToken(isset($data->token) ? new Token($data->token) : null)
-        ->setMetadata(MetadataEntry::allFromArray($data->metadata ?? []))
-        ->setSource($data->source ?? null)
-        ->setCreated($data->created ?? null)
-        ->setExpires($data->expires ?? null);
+            ->setContent($data->data ?? "")
+            ->setToken(isset($data->token) ? new Token($data->token) : null)
+            ->setMetadata(MetadataEntry::allFromArray($data->metadata ?? []))
+            ->setSource($data->source ?? null)
+            ->setCreated($data->created ?? null)
+            ->setExpires($data->expires ?? null);
     }
 
     /**
@@ -69,10 +97,10 @@ class Log
     public static function create(string $content, array $metadata = [], ?string $source = null): static
     {
         return new static()
-        ->setMetadata($metadata)
-        ->setSource($source)
-        ->setToken(new Token())
-        ->save($content);
+            ->setMetadata($metadata)
+            ->setSource($source)
+            ->setToken(new Token())
+            ->save($content);
     }
 
     /**
@@ -339,12 +367,12 @@ class Log
 
         MongoDBClient::getInstance()->getLogsCollection()->insertOne([
             "_id" => $this->id->get(),
-                                                                     "data" => $content,
-                                                                     "token" => $this->token?->get(),
-                                                                     "source" => $this->source,
-                                                                     "metadata" => $this->metadata,
-                                                                     "expires" => $this->expires = $this->getExpiryTimestamp(),
-                                                                     "created" => $this->created = new UTCDateTime()
+            "data" => $content,
+            "token" => $this->token?->get(),
+            "source" => $this->source,
+            "metadata" => $this->metadata,
+            "expires" => $this->expires = $this->getExpiryTimestamp(),
+            "created" => $this->created = new UTCDateTime()
         ]);
 
         return $this->setContent($content);
@@ -423,8 +451,8 @@ class Log
     public function delete(): bool
     {
         return MongoDBClient::getInstance()->getLogsCollection()
-        ->deleteOne(['_id' => $this->id->get()])
-        ->getDeletedCount() === 1;
+                ->deleteOne(['_id' => $this->id->get()])
+                ->getDeletedCount() === 1;
     }
 
     /**

@@ -1,5 +1,9 @@
 <?php
 
+use Aternos\Mclogs\Api\Action\BulkDeleteLogsAction;
+use Aternos\Mclogs\Api\Response\ApiError;
+use Aternos\Mclogs\Api\Response\ApiResponse;
+use Aternos\Mclogs\Api\Response\MultiResponse;
 use Aternos\Mclogs\Config\Config;
 use Aternos\Mclogs\Config\ConfigKey;
 use Aternos\Mclogs\Util\URL;
@@ -285,6 +289,58 @@ $config = Config::getInstance();
 {
     "success": false,
     "error": "Invalid token."
+}</pre>
+                </div>
+                <div class="api-docs-section" id="bulk-delete-log">
+                    <h2>Hromadně smazat více logů</h2>
+                    <div class="api-note">
+                        Tato metoda umožňuje smazat až <?= BulkDeleteLogsAction::MAX_IDS; ?> logů najednou.
+                        Smazání logů vyžaduje tokeny, které byly poskytnuty při jejich vytvoření.
+                    </div>
+
+                    <div class="api-endpoint">
+                        <span class="api-method">POST</span> <span class="api-url"><?= htmlspecialchars(URL::getApi()->toString()); ?>/1/bulk/log/delete</span>
+                    </div>
+
+                    <h3>Příklad těla požadavku <span class="content-type">application/json</span></h3>
+                    <pre class="api-code"><?= json_encode([
+                                [
+                                        "id" => "6wexMDE",
+                                        "token" => "78351fafe495398163fff847f9a26dda440435dcf7b5f92e8e36308f3683d771"
+                                ],
+                                [
+                                        "id" => "OahzhMG",
+                                        "token" => "6520dd42ec3d5fd0e83f28220974fb83d3bdc0746853f5022373f8e5b062651b"
+                                ],
+                        ], JSON_PRETTY_PRINT); ?></pre>
+
+                    <h3>Odpovědi</h3>
+                    <h4>Úspěch <span class="content-type">application/json</span></h4>
+                    <div class="api-note">
+                        Požadavek na hromadné smazání vrátí úspěšný výsledek a stavový kód <code>207</code>,
+                        což znamená, že požadavek byl zpracován.
+                        Výsledky jednotlivých operací jsou zahrnuty v těle odpovědi.
+                    </div>
+                    <pre class="api-code"><?=json_encode(new MultiResponse()
+                                ->addResponse("6wexMDE", new ApiResponse())
+                                ->addResponse("OahzhMG", new ApiResponse()), JSON_PRETTY_PRINT); ?></pre>
+                    <h4>Částečný úspěch <span class="content-type">application/json</span></h4>
+                    <div class="api-note">
+                        Pokud je požadavek na hromadné smazání platný, ale nelze smazat všechny logy (např. kvůli neplatným tokenům nebo neexistujícím logům),
+                        bude celkově stále považován za úspěšný, ale tělo odpovědi bude obsahovat chybové výsledky pro logy, které se nepodařilo smazat.
+                    </div>
+                    <pre class="api-code"><?=json_encode(new MultiResponse()
+                                ->addResponse("6wexMDE", new ApiResponse())
+                                ->addResponse("OahzhMG", new ApiError(404, "Log not found.")), JSON_PRETTY_PRINT); ?></pre>
+                    <h4>Chyba <span class="content-type">application/json</span></h4>
+                    <div class="api-note">
+                        Pokud je požadavek na hromadné smazání nesprávně naformátován nebo je neplatný, celý požadavek bude
+                        zamítnut s chybovou odpovědí a žádné logy nebudou smazány.
+                    </div>
+                    <pre class="api-code">
+{
+    "success": false,
+    "error": "No logs provided."
 }</pre>
                 </div>
                 <div class="api-docs-section" id="get-raw">
