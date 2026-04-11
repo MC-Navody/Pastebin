@@ -1,9 +1,9 @@
 <header>
-<a href="<?=htmlspecialchars(\Aternos\Mclogs\Util\URL::getBase()->toString()); ?>" class="logo">
-<img src="img/logo.png" alt="Logo" height="42" class="logo-icon">
+    <a href="<?= htmlspecialchars(\Aternos\Mclogs\Util\URL::getBase()->toString()); ?>" class="logo">
+        <img src="img/logo.png" alt="Logo" height="42" class="logo-icon">
 
-<span class="logo-text"><?= htmlspecialchars(\Aternos\Mclogs\Config\Config::getInstance()->getName()); ?></span>
-</a>
+        <span class="logo-text"><?= htmlspecialchars(\Aternos\Mclogs\Config\Config::getInstance()->getName()); ?></span>
+    </a>
     <div class="tagline">
         <h1 class="tagline-main"><span class="title-verb">Vlož</span> své logy.</h1>
         <div class="tagline-sub">Vytvořeno pro Minecraft a Hytale</div>

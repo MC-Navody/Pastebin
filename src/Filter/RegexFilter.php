@@ -8,19 +8,6 @@ use Aternos\Mclogs\Filter\Pattern\PatternWithReplacement;
 abstract class RegexFilter extends Filter
 {
     /**
-     * @return PatternWithReplacement[]
-     */
-    abstract protected function getPatterns(): array;
-
-    /**
-     * @return Pattern[]
-     */
-    protected function getExemptions(): array
-    {
-        return [];
-    }
-
-    /**
      * @inheritDoc
      */
     public function getType(): FilterType
@@ -37,6 +24,19 @@ abstract class RegexFilter extends Filter
             "patterns" => $this->getPatterns(),
             "exemptions" => $this->getExemptions(),
         ];
+    }
+
+    /**
+     * @return PatternWithReplacement[]
+     */
+    abstract protected function getPatterns(): array;
+
+    /**
+     * @return Pattern[]
+     */
+    protected function getExemptions(): array
+    {
+        return [];
     }
 
     /**

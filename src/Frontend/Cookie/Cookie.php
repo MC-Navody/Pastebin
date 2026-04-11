@@ -8,63 +8,15 @@ abstract class Cookie
 {
     protected ?string $value = null;
 
-    /**
-     * @return string
-     */
-    abstract protected function getKey(): string;
-
-    /**
-     * @return string
-     */
-    protected function getDomain(): string
-    {
-        return "";
-    }
-
-    /**
-     * @return int|null
-     */
-    protected function getMaxAge(): ?int
-    {
-        return null;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getPath(): string
-    {
-        return "/";
-    }
-
-    /**
-     * @return bool
-     */
-    protected function isSecure(): bool
-    {
-        return URL::getCurrent()->getScheme() === "https";
-    }
-
-    /**
-     * @return bool
-     */
-    protected function isHttpOnly(): bool
-    {
-        return true;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getSameSite(): string
-    {
-        return "Lax";
-    }
-
     public function __construct()
     {
         $this->value = $_COOKIE[$this->getKey()] ?? null;
     }
+
+    /**
+     * @return string
+     */
+    abstract protected function getKey(): string;
 
     /**
      * @param string $value
@@ -95,6 +47,54 @@ abstract class Cookie
     }
 
     /**
+     * @return int|null
+     */
+    protected function getMaxAge(): ?int
+    {
+        return null;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getPath(): string
+    {
+        return "/";
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDomain(): string
+    {
+        return "";
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isSecure(): bool
+    {
+        return URL::getCurrent()->getScheme() === "https";
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isHttpOnly(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getSameSite(): string
+    {
+        return "Lax";
+    }
+
+    /**
      * @return bool
      */
     public function delete(): bool
@@ -122,18 +122,18 @@ abstract class Cookie
     }
 
     /**
-     * @return string|null
-     */
-    public function getValue(): ?string
-    {
-        return $this->value;
-    }
-
-    /**
      * @return bool
      */
     public function exists(): bool
     {
         return $this->getValue() !== null;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getValue(): ?string
+    {
+        return $this->value;
     }
 }

@@ -14,6 +14,14 @@ class Token implements \JsonSerializable
     }
 
     /**
+     * @throws RandomException
+     */
+    protected function generate(): void
+    {
+        $this->value = bin2hex(random_bytes(32));
+    }
+
+    /**
      * @param string $token
      * @return bool
      */
@@ -25,14 +33,6 @@ class Token implements \JsonSerializable
     public function jsonSerialize(): string
     {
         return $this->value;
-    }
-
-    /**
-     * @throws RandomException
-     */
-    protected function generate(): void
-    {
-        $this->value = bin2hex(random_bytes(32));
     }
 
     public function get(): ?string

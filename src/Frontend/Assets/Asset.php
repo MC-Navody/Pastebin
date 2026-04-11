@@ -9,6 +9,14 @@ class Asset implements \JsonSerializable
 {
     protected const string HASH_ALGORITHM = 'sha384';
 
+    public function __construct(
+        protected AssetType $type,
+        protected string    $path,
+        protected ?string   $hash = null)
+    {
+        $this->path = ltrim($this->path, '/');
+    }
+
     /**
      * @param object $data
      * @return static|null
@@ -27,52 +35,6 @@ class Asset implements \JsonSerializable
         return new static($type, $data->path, $data->hash);
     }
 
-    public function __construct(
-        protected AssetType $type,
-        protected string    $path,
-        protected ?string   $hash = null)
-    {
-        $this->path = ltrim($this->path, '/');
-    }
-
-    public function getPath(): string
-    {
-        return $this->path;
-    }
-
-    public function getPathWithVersion(): string
-    {
-        return $this->path . '?v=' . rawurlencode(substr($this->getHash(), 0, 16));
-    }
-
-    protected function getAbsoluteBasePath(): string
-    {
-        return __DIR__ . "/../../../web/public/";
-    }
-
-    protected function getAbsolutePath(): string
-    {
-        return $this->getAbsoluteBasePath() . $this->path;
-    }
-
-    protected function buildHash(): string
-    {
-        return hash_file(static::HASH_ALGORITHM, $this->getAbsolutePath());
-    }
-
-    protected function getHash(): string
-    {
-        if ($this->hash === null) {
-            return $this->buildHash();
-        }
-        return $this->hash;
-    }
-
-    protected function getBase64Hash(): string
-    {
-        return base64_encode(hex2bin($this->getHash()));
-    }
-
     public function jsonSerialize(): array
     {
         return [
@@ -87,6 +49,11 @@ class Asset implements \JsonSerializable
         return $this->type;
     }
 
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
     public function getHTML(): string
     {
         return match ($this->type) {
@@ -95,11 +62,44 @@ class Asset implements \JsonSerializable
         };
     }
 
+    public function getPathWithVersion(): string
+    {
+        return $this->path . '?v=' . rawurlencode(substr($this->getHash(), 0, 16));
+    }
+
     protected function getIntegrityAttribute(): string
     {
         if (!Config::getInstance()->get(ConfigKey::FRONTEND_ASSETS_INTEGRITY)) {
             return '';
         }
         return ' integrity="' . static::HASH_ALGORITHM . '-' . $this->getBase64Hash() . '"';
+    }
+
+    protected function getBase64Hash(): string
+    {
+        return base64_encode(hex2bin($this->getHash()));
+    }
+
+    protected function getHash(): string
+    {
+        if ($this->hash === null) {
+            return $this->buildHash();
+        }
+        return $this->hash;
+    }
+
+    protected function buildHash(): string
+    {
+        return hash_file(static::HASH_ALGORITHM, $this->getAbsolutePath());
+    }
+
+    protected function getAbsolutePath(): string
+    {
+        return $this->getAbsoluteBasePath() . $this->path;
+    }
+
+    protected function getAbsoluteBasePath(): string
+    {
+        return __DIR__ . "/../../../web/public/";
     }
 }

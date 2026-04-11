@@ -9,6 +9,13 @@ trait Singleton
      */
     protected static array $instances = [];
 
+    /**
+     * Prohibited for singleton
+     */
+    protected function __construct()
+    {
+    }
+
     public static function getInstance(): static
     {
         $class = get_called_class();
@@ -20,18 +27,10 @@ trait Singleton
         return static::$instances[$class];
     }
 
-
     /**
      * Prohibited for singleton
      */
     protected function __clone()
-    {
-    }
-
-    /**
-     * Prohibited for singleton
-     */
-    protected function __construct()
     {
     }
 }

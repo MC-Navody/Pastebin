@@ -8,18 +8,6 @@ use Aternos\Mclogs\Router\Action;
 
 abstract class ApiAction extends Action
 {
-    abstract protected function runApi(): ApiResponse;
-
-    protected function getAllowedOrigin(): string
-    {
-        return '*';
-    }
-
-    protected function shouldAllowCredentials(): bool
-    {
-        return false;
-    }
-
     public function run(): bool
     {
         header('Access-Control-Allow-Origin: ' . $this->getAllowedOrigin());
@@ -34,4 +22,16 @@ abstract class ApiAction extends Action
 
         return true;
     }
+
+    protected function getAllowedOrigin(): string
+    {
+        return '*';
+    }
+
+    protected function shouldAllowCredentials(): bool
+    {
+        return false;
+    }
+
+    abstract protected function runApi(): ApiResponse;
 }

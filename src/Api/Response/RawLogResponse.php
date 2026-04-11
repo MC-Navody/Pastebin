@@ -7,7 +7,7 @@ use Aternos\Mclogs\Log;
 class RawLogResponse extends ApiResponse
 {
     public function __construct(
-        protected Log  $log)
+        protected Log $log)
     {
     }
 

@@ -4,27 +4,26 @@ use Aternos\Mclogs\Config\Config;
 use Aternos\Mclogs\Config\ConfigKey;
 use Aternos\Mclogs\Frontend\Assets\AssetLoader;
 use Aternos\Mclogs\Frontend\Assets\AssetType;
-use Aternos\Mclogs\Util\URL;
 
 ?>
-    <meta charset="utf-8"/>
+<meta charset="utf-8"/>
 
-    <base href="/"/>
-    <?= AssetLoader::getInstance()->getHTML(AssetType::CSS, "vendor/fontawesome/css/fontawesome.min.css"); ?>
-    <?= AssetLoader::getInstance()->getHTML(AssetType::CSS, "css/mclogs.css"); ?>
+<base href="/"/>
+<?= AssetLoader::getInstance()->getHTML(AssetType::CSS, "vendor/fontawesome/css/fontawesome.min.css"); ?>
+<?= AssetLoader::getInstance()->getHTML(AssetType::CSS, "css/mclogs.css"); ?>
 
-    <style>
-        :root {
-            --bg: <?= htmlspecialchars(Config::getInstance()->get(ConfigKey::FRONTEND_COLOR_BACKGROUND)); ?>;
-            --text: <?= htmlspecialchars(Config::getInstance()->get(ConfigKey::FRONTEND_COLOR_TEXT)); ?>;
-            --accent: <?= htmlspecialchars(Config::getInstance()->get(ConfigKey::FRONTEND_COLOR_ACCENT)); ?>;
-            --error: <?= htmlspecialchars(Config::getInstance()->get(ConfigKey::FRONTEND_COLOR_ERROR)); ?>;
-        }
-    </style>
+<style>
+    :root {
+        --bg: <?= htmlspecialchars(Config::getInstance()->get(ConfigKey::FRONTEND_COLOR_BACKGROUND)); ?>;
+        --text: <?= htmlspecialchars(Config::getInstance()->get(ConfigKey::FRONTEND_COLOR_TEXT)); ?>;
+        --accent: <?= htmlspecialchars(Config::getInstance()->get(ConfigKey::FRONTEND_COLOR_ACCENT)); ?>;
+        --error: <?= htmlspecialchars(Config::getInstance()->get(ConfigKey::FRONTEND_COLOR_ERROR)); ?>;
+    }
+</style>
 
-    <link rel="icon" href="img/logo.png" type="image/png">
+<link rel="icon" href="img/logo.png" type="image/png">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 <?php if (Config::getInstance()->get(ConfigKey::FRONTEND_ANALYTICS)): ?>
     <script>
         let _paq = window._paq = window._paq || [];

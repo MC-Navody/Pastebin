@@ -9,11 +9,6 @@ class PatternWithReplacement extends Pattern
         parent::__construct($pattern, $modifiers);
     }
 
-    public function getReplacement(): string
-    {
-        return $this->replacement;
-    }
-
     public function jsonSerialize(): array
     {
         return array_merge(
@@ -22,5 +17,10 @@ class PatternWithReplacement extends Pattern
                 'replacement' => $this->getReplacement()
             ]
         );
+    }
+
+    public function getReplacement(): string
+    {
+        return $this->replacement;
     }
 }

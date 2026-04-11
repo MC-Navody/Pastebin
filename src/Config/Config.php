@@ -24,6 +24,14 @@ class Config
     }
 
     /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->get(ConfigKey::FRONTEND_NAME) ?? URL::getBase()->getHost();
+    }
+
+    /**
      * Get config value by checking environment variable, then config file, then default value
      *
      * @param ConfigKey $key
@@ -47,14 +55,6 @@ class Config
         }
 
         return $key->getDefaultValue();
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->get(ConfigKey::FRONTEND_NAME) ?? URL::getBase()->getHost();
     }
 
     /**

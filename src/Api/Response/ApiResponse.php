@@ -15,6 +15,14 @@ class ApiResponse implements \JsonSerializable
     }
 
     /**
+     * @return int
+     */
+    public function getHttpCode(): int
+    {
+        return $this->httpCode;
+    }
+
+    /**
      * @param int $httpCode
      * @return $this
      */
@@ -25,11 +33,11 @@ class ApiResponse implements \JsonSerializable
     }
 
     /**
-     * @return int
+     * @return bool
      */
-    public function getHttpCode(): int
+    public function isSuccess(): bool
     {
-        return $this->httpCode;
+        return $this->success;
     }
 
     /**
@@ -40,14 +48,6 @@ class ApiResponse implements \JsonSerializable
     {
         $this->success = $success;
         return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isSuccess(): bool
-    {
-        return $this->success;
     }
 
     /**

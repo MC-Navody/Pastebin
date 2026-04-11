@@ -16,15 +16,15 @@ use Aternos\Mclogs\Id;
  */
 class Printer extends ModifiableDefaultPrinter
 {
-    public function __construct()
-    {
-        $this->addModification(new FormatModification());
-    }
-
     /**
      * @var Id
      */
     protected Id $id;
+
+    public function __construct()
+    {
+        $this->addModification(new FormatModification());
+    }
 
     /**
      * @param Id $id

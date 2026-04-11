@@ -10,16 +10,6 @@ use Aternos\Mclogs\Util\URL;
 
 class DeleteLogAction extends ApiAction
 {
-    protected function getRequestToken(): ?string
-    {
-        $authorizationHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? null;
-        if (!$authorizationHeader) {
-            return null;
-        }
-        $parts = explode(" ", $authorizationHeader);
-        return $parts[1] ?? null;
-    }
-
     /**
      * @return ApiResponse
      */
@@ -51,6 +41,16 @@ class DeleteLogAction extends ApiAction
         $this->handleDeletedLog($log);
 
         return new ApiResponse();
+    }
+
+    protected function getRequestToken(): ?string
+    {
+        $authorizationHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? null;
+        if (!$authorizationHeader) {
+            return null;
+        }
+        $parts = explode(" ", $authorizationHeader);
+        return $parts[1] ?? null;
     }
 
     protected function handleDeletedLog(Log $log): void

@@ -31,6 +31,14 @@ class Pattern implements \JsonSerializable
         return static::DELIMITER . $this->pattern . static::DELIMITER . $modifiersString;
     }
 
+    public function jsonSerialize(): array
+    {
+        return [
+            'pattern' => $this->getPattern(),
+            'modifiers' => $this->getModifiers()
+        ];
+    }
+
     public function getPattern(): string
     {
         return $this->pattern;
@@ -39,13 +47,5 @@ class Pattern implements \JsonSerializable
     public function getModifiers(): array
     {
         return $this->modifiers;
-    }
-
-    public function jsonSerialize(): array
-    {
-        return [
-            'pattern' => $this->getPattern(),
-            'modifiers' => $this->getModifiers()
-        ];
     }
 }

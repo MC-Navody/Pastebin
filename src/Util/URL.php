@@ -20,6 +20,75 @@ class URL
     }
 
     /**
+     * Get base URL
+     *
+     * @return Uri
+     */
+    public static function getBase(): Uri
+    {
+        return static::$base = new Uri("https://log.mcnavody.eu");
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isApi(): bool
+    {
+        $currentHost = static::getCurrent()->getHost();
+        $apiHost = static::getApi()->getHost();
+        return $currentHost === $apiHost;
+    }
+
+    /**
+     * @return Uri
+     */
+    public static function getCurrent(): Uri
+    {
+        if (static::$current) {
+            return static::$current;
+        }
+        $scheme = $_SERVER['REQUEST_SCHEME'];
+        $host = $_SERVER['HTTP_HOST'];
+        $requestUri = $_SERVER['REQUEST_URI'];
+        return static::$current = new Uri("$scheme://$host$requestUri");
+    }
+
+    /**
+     * Get API URL
+     *
+     * @return Uri
+     */
+    public static function getApi(): Uri
+    {
+        return static::$api = new Uri("https://api.mcnavody.eu");
+    }
+
+    /**
+     * @return string
+     */
+    public static function getLastPathPart(): string
+    {
+        $path = static::getCurrent()->getPath();
+        $parts = explode("/", $path);
+        do {
+            $part = trim(array_pop($parts));
+        } while ($part === "" && count($parts) > 0);
+        return $part;
+    }
+
+    /**
+     * @return string
+     */
+    protected static function getProtocol(): string
+    {
+        $protocol = static::readProtocol();
+        if ($protocol === 'https') {
+            return 'https';
+        }
+        return 'http';
+    }
+
+    /**
      * @return string
      */
     protected static function readProtocol(): string
@@ -44,74 +113,5 @@ class URL
             return strtolower($_SERVER['REQUEST_SCHEME']);
         }
         return 'http';
-    }
-
-    /**
-     * @return string
-     */
-    protected static function getProtocol(): string
-    {
-        $protocol = static::readProtocol();
-        if ($protocol === 'https') {
-            return 'https';
-        }
-        return 'http';
-    }
-
-    /**
-     * Get base URL
-     *
-     * @return Uri
-     */
-    public static function getBase(): Uri
-    {
-        return static::$base = new Uri("https://log.mcnavody.eu");
-    }
-
-    /**
-     * Get API URL
-     *
-     * @return Uri
-     */
-    public static function getApi(): Uri
-    {
-        return static::$api = new Uri("https://api.mcnavody.eu");
-    }
-
-    /**
-     * @return Uri
-     */
-    public static function getCurrent(): Uri
-    {
-        if (static::$current) {
-            return static::$current;
-        }
-        $scheme = $_SERVER['REQUEST_SCHEME'];
-        $host = $_SERVER['HTTP_HOST'];
-        $requestUri = $_SERVER['REQUEST_URI'];
-        return static::$current = new Uri("$scheme://$host$requestUri");
-    }
-
-    /**
-     * @return bool
-     */
-    public static function isApi(): bool
-    {
-        $currentHost = static::getCurrent()->getHost();
-        $apiHost = static::getApi()->getHost();
-        return $currentHost === $apiHost;
-    }
-
-    /**
-     * @return string
-     */
-    public static function getLastPathPart(): string
-    {
-        $path = static::getCurrent()->getPath();
-        $parts = explode("/", $path);
-        do {
-            $part = trim(array_pop($parts));
-        } while ($part === "" && count($parts) > 0);
-        return $part;
     }
 }

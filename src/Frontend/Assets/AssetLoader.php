@@ -20,6 +20,34 @@ class AssetLoader
         $this->loadCache();
     }
 
+    protected function loadCache(): void
+    {
+        if (!file_exists(self::CACHE_PATH)) {
+            return;
+        }
+
+        $content = file_get_contents(self::CACHE_PATH);
+        if ($content === false) {
+            return;
+        }
+
+        $data = json_decode($content);
+        if (!is_array($data)) {
+            return;
+        }
+
+        foreach ($data as $assetData) {
+            if (!is_object($assetData)) {
+                continue;
+            }
+            $asset = Asset::fromObject($assetData);
+            if ($asset === null) {
+                continue;
+            }
+            $this->cachedAssets[] = $asset;
+        }
+    }
+
     /**
      * @param AssetType $assetType
      * @param string $path
@@ -57,34 +85,6 @@ class AssetLoader
             }
         }
         return null;
-    }
-
-    protected function loadCache(): void
-    {
-        if (!file_exists(self::CACHE_PATH)) {
-            return;
-        }
-
-        $content = file_get_contents(self::CACHE_PATH);
-        if ($content === false) {
-            return;
-        }
-
-        $data = json_decode($content);
-        if (!is_array($data)) {
-            return;
-        }
-
-        foreach ($data as $assetData) {
-            if (!is_object($assetData)) {
-                continue;
-            }
-            $asset = Asset::fromObject($assetData);
-            if ($asset === null) {
-                continue;
-            }
-            $this->cachedAssets[] = $asset;
-        }
     }
 
     public function writeCache(): void

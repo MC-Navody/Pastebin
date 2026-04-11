@@ -23,16 +23,15 @@ class Settings
     }
 
     /**
-     * @param Setting $key
-     * @return bool
+     * @return string
      */
-    public function get(Setting $key): bool
+    public function getBodyClassesString(): string
     {
-        $value = $this->data[$key->value] ?? false;
-        if (is_bool($value)) {
-            return $value;
+        $classes = $this->getBodyClasses();
+        if (empty($classes)) {
+            return "";
         }
-        return false;
+        return " " . implode(" ", $this->getBodyClasses());
     }
 
     /**
@@ -53,14 +52,15 @@ class Settings
     }
 
     /**
-     * @return string
+     * @param Setting $key
+     * @return bool
      */
-    public function getBodyClassesString(): string
+    public function get(Setting $key): bool
     {
-        $classes = $this->getBodyClasses();
-        if (empty($classes)) {
-            return "";
+        $value = $this->data[$key->value] ?? false;
+        if (is_bool($value)) {
+            return $value;
         }
-        return " " . implode(" ", $this->getBodyClasses());
+        return false;
     }
 }

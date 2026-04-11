@@ -10,6 +10,20 @@ abstract class Filter implements \JsonSerializable
     protected static ?array $filter = null;
 
     /**
+     * Filter the $data string with all filters and return it
+     *
+     * @param string $data
+     * @return string
+     */
+    public static function filterAll(string $data): string
+    {
+        foreach (static::getAll() as $filter) {
+            $data = $filter->filter($data);
+        }
+        return $data;
+    }
+
+    /**
      * Get all filters
      *
      * @return Filter[]
@@ -31,28 +45,12 @@ abstract class Filter implements \JsonSerializable
     }
 
     /**
-     * Filter the $data string with all filters and return it
+     * Filter the $data string and return it
      *
      * @param string $data
      * @return string
      */
-    public static function filterAll(string $data): string
-    {
-        foreach (static::getAll() as $filter) {
-            $data = $filter->filter($data);
-        }
-        return $data;
-    }
-
-    /**
-     * @return FilterType
-     */
-    abstract public function getType(): FilterType;
-
-    /**
-     * @return array
-     */
-    abstract public function getData(): mixed;
+    abstract public function filter(string $data): string;
 
     /**
      * @return array
@@ -66,10 +64,12 @@ abstract class Filter implements \JsonSerializable
     }
 
     /**
-     * Filter the $data string and return it
-     *
-     * @param string $data
-     * @return string
+     * @return FilterType
      */
-    abstract public function filter(string $data): string;
+    abstract public function getType(): FilterType;
+
+    /**
+     * @return array
+     */
+    abstract public function getData(): mixed;
 }

@@ -2,10 +2,10 @@
 
 namespace Aternos\Mclogs\Api;
 
-use Aternos\Mclogs\Router\Router;
 use Aternos\Mclogs\Frontend;
 use Aternos\Mclogs\Id;
 use Aternos\Mclogs\Router\Method;
+use Aternos\Mclogs\Router\Router;
 
 class ApiRouter extends Router
 {

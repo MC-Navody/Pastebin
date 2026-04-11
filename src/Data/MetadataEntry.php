@@ -59,6 +59,32 @@ class MetadataEntry implements \JsonSerializable, Serializable
     }
 
     /**
+     * @param array $data
+     * @return $this
+     */
+    public function setFromArray(array $data): static
+    {
+        if (isset($data['key']) && is_string($data['key'])) {
+            $this->setKey($data['key']);
+        }
+        if (isset($data['value'])) {
+            $this->setValue($data['value']);
+        }
+        if (isset($data['label']) && is_string($data['label'])) {
+            $this->setLabel($data['label']);
+        }
+        if (isset($data['visible']) && is_bool($data['visible'])) {
+            $this->setVisible($data['visible']);
+        }
+        return $this;
+    }
+
+    public function isValid(): bool
+    {
+        return $this->key !== null && $this->value !== null;
+    }
+
+    /**
      * @param object $data
      * @return MetadataEntry|null
      */
@@ -72,6 +98,11 @@ class MetadataEntry implements \JsonSerializable, Serializable
         return static::fromArray($arrayData);
     }
 
+    public function bsonSerialize(): array
+    {
+        return $this->jsonSerialize();
+    }
+
     public function jsonSerialize(): array
     {
         return [
@@ -80,11 +111,6 @@ class MetadataEntry implements \JsonSerializable, Serializable
             "label" => $this->label,
             "visible" => $this->visible,
         ];
-    }
-
-    public function bsonSerialize(): array
-    {
-        return $this->jsonSerialize();
     }
 
     public function getKey(): ?string
@@ -140,6 +166,15 @@ class MetadataEntry implements \JsonSerializable, Serializable
         return $this->label;
     }
 
+    public function setLabel(?string $label): static
+    {
+        if (is_string($label) && strlen($label) > static::MAX_LABEL_LENGTH) {
+            $label = substr($label, 0, static::MAX_LABEL_LENGTH);
+        }
+        $this->label = $label;
+        return $this;
+    }
+
     public function getDisplayLabel(): ?string
     {
         return $this->label ?? $this->key;
@@ -150,15 +185,6 @@ class MetadataEntry implements \JsonSerializable, Serializable
         return $this->value;
     }
 
-    public function setLabel(?string $label): static
-    {
-        if (is_string($label) && strlen($label) > static::MAX_LABEL_LENGTH) {
-            $label = substr($label, 0, static::MAX_LABEL_LENGTH);
-        }
-        $this->label = $label;
-        return $this;
-    }
-
     public function isVisible(): bool
     {
         return $this->visible;
@@ -167,32 +193,6 @@ class MetadataEntry implements \JsonSerializable, Serializable
     public function setVisible(bool $visible): static
     {
         $this->visible = $visible;
-        return $this;
-    }
-
-    public function isValid(): bool
-    {
-        return $this->key !== null && $this->value !== null;
-    }
-
-    /**
-     * @param array $data
-     * @return $this
-     */
-    public function setFromArray(array $data): static
-    {
-        if (isset($data['key']) && is_string($data['key'])) {
-            $this->setKey($data['key']);
-        }
-        if (isset($data['value'])) {
-            $this->setValue($data['value']);
-        }
-        if (isset($data['label']) && is_string($data['label'])) {
-            $this->setLabel($data['label']);
-        }
-        if (isset($data['visible']) && is_bool($data['visible'])) {
-            $this->setVisible($data['visible']);
-        }
         return $this;
     }
 }

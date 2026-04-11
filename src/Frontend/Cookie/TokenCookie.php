@@ -9,6 +9,14 @@ use Aternos\Mclogs\Log;
 class TokenCookie extends Cookie
 {
     /**
+     * @param Log|null $log
+     */
+    public function __construct(protected ?Log $log = null)
+    {
+        parent::__construct();
+    }
+
+    /**
      * @param Log $log
      * @return $this
      */
@@ -24,14 +32,6 @@ class TokenCookie extends Cookie
     protected function getKey(): string
     {
         return "MCLOGS_LOG_TOKEN";
-    }
-
-    /**
-     * @param Log|null $log
-     */
-    public function __construct(protected ?Log $log = null)
-    {
-        parent::__construct();
     }
 
     /**

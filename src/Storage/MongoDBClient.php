@@ -22,6 +22,46 @@ class MongoDBClient
     protected ?Collection $cache = null;
 
     /**
+     * Ensure indexes exist
+     *
+     * @return void
+     */
+    public function ensureIndexes(): void
+    {
+        $logs = $this->getLogsCollection();
+        $logs->createIndex(['expires' => 1], ['expireAfterSeconds' => 0]);
+
+        $cache = $this->getCacheCollection();
+        $cache->createIndex(['expires' => 1], ['expireAfterSeconds' => 0]);
+    }
+
+    /**
+     * Get the collection for logs
+     *
+     * @return Collection
+     */
+    public function getLogsCollection(): Collection
+    {
+        if ($this->logs === null) {
+            $this->connect();
+            $this->logs = $this->database->getCollection('logs');
+        }
+        return $this->logs;
+    }
+
+    /**
+     * Connect to MongoDB
+     */
+    protected function connect(): void
+    {
+        if ($this->connection === null) {
+            $config = Config::getInstance();
+            $this->connection = new Client($this->getConnectionURL());
+            $this->database = $this->connection->getDatabase($config->get(ConfigKey::MONGODB_DATABASE));
+        }
+    }
+
+    /**
      * @return string
      */
     protected function getConnectionURL(): string
@@ -45,29 +85,17 @@ class MongoDBClient
     }
 
     /**
-     * Connect to MongoDB
-     */
-    protected function connect(): void
-    {
-        if ($this->connection === null) {
-            $config = Config::getInstance();
-            $this->connection = new Client($this->getConnectionURL());
-            $this->database = $this->connection->getDatabase($config->get(ConfigKey::MONGODB_DATABASE));
-        }
-    }
-
-    /**
-     * Ensure indexes exist
+     * Get the collection for caching
      *
-     * @return void
+     * @return Collection
      */
-    public function ensureIndexes(): void
+    public function getCacheCollection(): Collection
     {
-        $logs = $this->getLogsCollection();
-        $logs->createIndex(['expires' => 1], ['expireAfterSeconds' => 0]);
-
-        $cache = $this->getCacheCollection();
-        $cache->createIndex(['expires' => 1], ['expireAfterSeconds' => 0]);
+        if ($this->cache === null) {
+            $this->connect();
+            $this->cache = $this->database->getCollection('cache');
+        }
+        return $this->cache;
     }
 
     /**
@@ -78,41 +106,6 @@ class MongoDBClient
         $this->connection = null;
         $this->logs = null;
         $this->cache = null;
-    }
-
-    /**
-     * Get the collection for logs
-     *
-     * @return Collection
-     */
-    public function getLogsCollection(): Collection
-    {
-        if ($this->logs === null) {
-            $this->connect();
-            $this->logs = $this->database->getCollection('logs');
-        }
-        return $this->logs;
-    }
-
-    /**
-     * @param string $id
-     * @param bool $includeContent
-     * @return object|null
-     */
-    public function findLog(string $id, bool $includeContent = true): ?object
-    {
-        $options = [];
-        if (!$includeContent) {
-            $options['projection'] = ['data' => 0];
-        }
-
-        $collection = $this->getLogsCollection();
-        $result = $collection->findOne(['_id' => $id], $options);
-        if ($result === null) {
-            // Check for legacy ID without the first character
-            return $collection->findOne(['_id' => substr($id, 1)], $options);
-        }
-        return $result;
     }
 
     /**
@@ -205,6 +198,27 @@ class MongoDBClient
 
     /**
      * @param string $id
+     * @param bool $includeContent
+     * @return object|null
+     */
+    public function findLog(string $id, bool $includeContent = true): ?object
+    {
+        $options = [];
+        if (!$includeContent) {
+            $options['projection'] = ['data' => 0];
+        }
+
+        $collection = $this->getLogsCollection();
+        $result = $collection->findOne(['_id' => $id], $options);
+        if ($result === null) {
+            // Check for legacy ID without the first character
+            return $collection->findOne(['_id' => substr($id, 1)], $options);
+        }
+        return $result;
+    }
+
+    /**
+     * @param string $id
      * @param UTCDateTime $expires
      * @return bool
      */
@@ -216,19 +230,5 @@ class MongoDBClient
             ['$set' => ['expires' => $expires]]
         );
         return $result->getModifiedCount() === 1;
-    }
-
-    /**
-     * Get the collection for caching
-     *
-     * @return Collection
-     */
-    public function getCacheCollection(): Collection
-    {
-        if ($this->cache === null) {
-            $this->connect();
-            $this->cache = $this->database->getCollection('cache');
-        }
-        return $this->cache;
     }
 }

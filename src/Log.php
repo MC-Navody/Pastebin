@@ -37,6 +37,13 @@ class Log
     protected ?Printer $printer = null;
 
     /**
+     * @param Id|null $id
+     */
+    public function __construct(protected ?Id $id = null)
+    {
+    }
+
+    /**
      * Find a log by its id
      *
      * @param Id $id
@@ -51,23 +58,6 @@ class Log
         }
 
         return static::fromObject($id, $data);
-    }
-
-    /**
-     * @param (string|Id)[] $ids
-     * @param bool $includeContent
-     * @return array<string, Log>
-     */
-    public static function findAll(array $ids, bool $includeContent = true): array
-    {
-        $ids = array_map(fn($id) => (string)$id, $ids);
-        $objects = MongoDBClient::getInstance()->findLogs($ids, $includeContent);
-        $logs = [];
-        foreach ($objects as $data) {
-            $id = new Id($data->_id);
-            $logs[$id->get()] = static::fromObject($id, $data);
-        }
-        return $logs;
     }
 
     /**
@@ -87,117 +77,6 @@ class Log
     }
 
     /**
-     * Create and save a new log
-     *
-     * @param string $content
-     * @param MetadataEntry[] $metadata
-     * @param string|null $source
-     * @return static
-     */
-    public static function create(string $content, array $metadata = [], ?string $source = null): static
-    {
-        return new static()
-            ->setMetadata($metadata)
-            ->setSource($source)
-            ->setToken(new Token())
-            ->save($content);
-    }
-
-    /**
-     * @param Id|null $id
-     */
-    public function __construct(protected ?Id $id = null)
-    {
-    }
-
-    /**
-     * @param Token|null $token
-     * @return $this
-     */
-    public function setToken(?Token $token): static
-    {
-        $this->token = $token;
-        return $this;
-    }
-
-    /**
-     * @param MetadataEntry[] $metadata
-     * @return $this
-     */
-    public function setMetadata(array $metadata): static
-    {
-        $this->metadata = $metadata;
-        return $this;
-    }
-
-    /**
-     * @param MetadataEntry $metadataEntry
-     * @return $this
-     */
-    public function addMetadata(MetadataEntry $metadataEntry): static
-    {
-        $this->metadata[] = $metadataEntry;
-        return $this;
-    }
-
-    /**
-     * @param string|null $source
-     * @return $this
-     */
-    public function setSource(?string $source): static
-    {
-        if (is_string($source) && strlen($source) > static::SOURCE_MAX_LENGTH) {
-            $source = substr($source, 0, static::SOURCE_MAX_LENGTH);
-        }
-        $this->source = $source;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getSource(): ?string
-    {
-        return $this->source;
-    }
-
-    /**
-     * @param UTCDateTime|null $created
-     * @return $this
-     */
-    public function setCreated(?UTCDateTime $created): static
-    {
-        $this->created = $created;
-        return $this;
-    }
-
-    /**
-     * @param UTCDateTime|null $expires
-     * @return $this
-     */
-    public function setExpires(?UTCDateTime $expires): static
-    {
-        $this->expires = $expires;
-        return $this;
-    }
-
-    /**
-     * @return UTCDateTime|null
-     */
-    public function getCreated(): ?UTCDateTime
-    {
-        return $this->created;
-    }
-
-    /**
-     * @return UTCDateTime|null
-     */
-    public function getExpires(): ?UTCDateTime
-    {
-        return $this->expires;
-    }
-
-    /**
      * @param string $content
      * @return $this
      */
@@ -205,11 +84,6 @@ class Log
     {
         $this->processAndDeobfuscate($content);
         return $this;
-    }
-
-    public function getContent(): string
-    {
-        return $this->log->getLogFile()->getContent();
     }
 
     protected function processAndDeobfuscate(string $data): void
@@ -241,115 +115,37 @@ class Log
     }
 
     /**
-     * Get the log analysis
+     * @param (string|Id)[] $ids
+     * @param bool $includeContent
+     * @return array<string, Log>
+     */
+    public static function findAll(array $ids, bool $includeContent = true): array
+    {
+        $ids = array_map(fn($id) => (string)$id, $ids);
+        $objects = MongoDBClient::getInstance()->findLogs($ids, $includeContent);
+        $logs = [];
+        foreach ($objects as $data) {
+            $id = new Id($data->_id);
+            $logs[$id->get()] = static::fromObject($id, $data);
+        }
+        return $logs;
+    }
+
+    /**
+     * Create and save a new log
      *
-     * @return Analysis|null
+     * @param string $content
+     * @param MetadataEntry[] $metadata
+     * @param string|null $source
+     * @return static
      */
-    public function getAnalysis(): ?Analysis
+    public static function create(string $content, array $metadata = [], ?string $source = null): static
     {
-        $log = $this->getCodexLog();
-        if ($log instanceof AnalysableLogInterface) {
-            return $log->analyse();
-        }
-        return null;
-    }
-
-    /**
-     * @return Printer
-     */
-    public function getPrinter(): Printer
-    {
-        if ($this->printer === null) {
-            $this->printer = new Printer()->setLog($this->log)->setId($this->id);
-        }
-        return $this->printer;
-    }
-
-    /**
-     * Get the amount of lines in this log
-     *
-     * @return int
-     */
-    public function getLinesCount(): int
-    {
-        $codexLog = $this->getCodexLog();
-        $lines = 0;
-        foreach ($codexLog as $entry) {
-            $lines += count($entry);
-        }
-        return $lines;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLinesString(): string
-    {
-        $lineCount = $this->getLinesCount();
-        if ($lineCount === 1) {
-            return $lineCount . " řádek";
-        }
-        if ($lineCount >= 2 && $lineCount <= 4) {
-            return $lineCount . " řádky";
-        }
-        return $lineCount . " řádků";
-    }
-
-    /**
-     * @return int
-     */
-    public function getSize(): int
-    {
-        return strlen($this->getContent());
-    }
-
-    /**
-     * Get the amount of error entries in the log
-     *
-     * @return int
-     */
-    public function getErrorsCount(): int
-    {
-        $errorCount = 0;
-
-        foreach ($this->log as $entry) {
-            if ($entry->getLevel()->asInt() <= Level::ERROR->asInt()) {
-                $errorCount++;
-            }
-        }
-
-        return $errorCount;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasErrors(): bool
-    {
-        return $this->getErrorsCount() > 0;
-    }
-
-    /**
-     * @return string
-     */
-    public function getErrorsString(): string
-    {
-        $errorCount = $this->getErrorsCount();
-        if ($errorCount === 1) {
-            return $errorCount . " chyba";
-        }
-        if ($errorCount >= 2 && $errorCount <= 4) {
-            return $errorCount . " chyby";
-        }
-        return $errorCount . " chyb";
-    }
-
-    protected function generateId(): Id
-    {
-        do {
-            $this->id = new Id();
-        } while (MongoDBClient::getInstance()->hasLog($this->id));
-        return $this->id;
+        return new static()
+            ->setMetadata($metadata)
+            ->setSource($source)
+            ->setToken(new Token())
+            ->save($content);
     }
 
     /**
@@ -378,6 +174,14 @@ class Log
         return $this->setContent($content);
     }
 
+    protected function generateId(): Id
+    {
+        do {
+            $this->id = new Id();
+        } while (MongoDBClient::getInstance()->hasLog($this->id));
+        return $this->id;
+    }
+
     /**
      * @return UTCDateTime
      */
@@ -386,6 +190,97 @@ class Log
         $ttl = \Aternos\Mclogs\Config\Config::getInstance()->get(ConfigKey::STORAGE_TTL);
         $expires = time() + $ttl;
         return new UTCDateTime($expires * 1000);
+    }
+
+    /**
+     * @param MetadataEntry $metadataEntry
+     * @return $this
+     */
+    public function addMetadata(MetadataEntry $metadataEntry): static
+    {
+        $this->metadata[] = $metadataEntry;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSource(): ?string
+    {
+        return $this->source;
+    }
+
+    /**
+     * @param string|null $source
+     * @return $this
+     */
+    public function setSource(?string $source): static
+    {
+        if (is_string($source) && strlen($source) > static::SOURCE_MAX_LENGTH) {
+            $source = substr($source, 0, static::SOURCE_MAX_LENGTH);
+        }
+        $this->source = $source;
+        return $this;
+    }
+
+    /**
+     * @return UTCDateTime|null
+     */
+    public function getCreated(): ?UTCDateTime
+    {
+        return $this->created;
+    }
+
+    /**
+     * @param UTCDateTime|null $created
+     * @return $this
+     */
+    public function setCreated(?UTCDateTime $created): static
+    {
+        $this->created = $created;
+        return $this;
+    }
+
+    /**
+     * @return UTCDateTime|null
+     */
+    public function getExpires(): ?UTCDateTime
+    {
+        return $this->expires;
+    }
+
+    /**
+     * @param UTCDateTime|null $expires
+     * @return $this
+     */
+    public function setExpires(?UTCDateTime $expires): static
+    {
+        $this->expires = $expires;
+        return $this;
+    }
+
+    /**
+     * @return Printer
+     */
+    public function getPrinter(): Printer
+    {
+        if ($this->printer === null) {
+            $this->printer = new Printer()->setLog($this->log)->setId($this->id);
+        }
+        return $this->printer;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSize(): int
+    {
+        return strlen($this->getContent());
+    }
+
+    public function getContent(): string
+    {
+        return $this->log->getLogFile()->getContent();
     }
 
     /**
@@ -404,14 +299,6 @@ class Log
     }
 
     /**
-     * @return Uri
-     */
-    public function getURL(): Uri
-    {
-        return URL::getBase()->withPath("/" . $this->id->get());
-    }
-
-    /**
      *
      * @return string
      */
@@ -424,25 +311,17 @@ class Log
     /**
      * @return Uri
      */
+    public function getURL(): Uri
+    {
+        return URL::getBase()->withPath("/" . $this->id->get());
+    }
+
+    /**
+     * @return Uri
+     */
     public function getRawURL(): Uri
     {
         return URL::getApi()->withPath("/1/raw/" . $this->id->get());
-    }
-
-    /**
-     * @return Id|null
-     */
-    public function getId(): ?Id
-    {
-        return $this->id;
-    }
-
-    /**
-     * @return Token|null
-     */
-    public function getToken(): ?Token
-    {
-        return $this->token;
     }
 
     /**
@@ -461,6 +340,16 @@ class Log
     public function getMetadata(): array
     {
         return $this->metadata;
+    }
+
+    /**
+     * @param MetadataEntry[] $metadata
+     * @return $this
+     */
+    public function setMetadata(array $metadata): static
+    {
+        $this->metadata = $metadata;
+        return $this;
     }
 
     /**
@@ -485,6 +374,24 @@ class Log
     }
 
     /**
+     * @return Token|null
+     */
+    public function getToken(): ?Token
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param Token|null $token
+     * @return $this
+     */
+    public function setToken(?Token $token): static
+    {
+        $this->token = $token;
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function hasValidTokenCookie(): bool
@@ -503,6 +410,14 @@ class Log
     public function getPageTitle(): string
     {
         return $this->getCodexLog()?->getTitle() . " [#" . $this->getId()?->get() . "]";
+    }
+
+    /**
+     * @return Id|null
+     */
+    public function getId(): ?Id
+    {
+        return $this->id;
     }
 
     /**
@@ -537,5 +452,90 @@ class Log
         }
 
         return $description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLinesString(): string
+    {
+        $lineCount = $this->getLinesCount();
+        if ($lineCount === 1) {
+            return $lineCount . " řádek";
+        }
+        if ($lineCount >= 2 && $lineCount <= 4) {
+            return $lineCount . " řádky";
+        }
+        return $lineCount . " řádků";
+    }
+
+    /**
+     * Get the amount of lines in this log
+     *
+     * @return int
+     */
+    public function getLinesCount(): int
+    {
+        $codexLog = $this->getCodexLog();
+        $lines = 0;
+        foreach ($codexLog as $entry) {
+            $lines += count($entry);
+        }
+        return $lines;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasErrors(): bool
+    {
+        return $this->getErrorsCount() > 0;
+    }
+
+    /**
+     * Get the amount of error entries in the log
+     *
+     * @return int
+     */
+    public function getErrorsCount(): int
+    {
+        $errorCount = 0;
+
+        foreach ($this->log as $entry) {
+            if ($entry->getLevel()->asInt() <= Level::ERROR->asInt()) {
+                $errorCount++;
+            }
+        }
+
+        return $errorCount;
+    }
+
+    /**
+     * @return string
+     */
+    public function getErrorsString(): string
+    {
+        $errorCount = $this->getErrorsCount();
+        if ($errorCount === 1) {
+            return $errorCount . " chyba";
+        }
+        if ($errorCount >= 2 && $errorCount <= 4) {
+            return $errorCount . " chyby";
+        }
+        return $errorCount . " chyb";
+    }
+
+    /**
+     * Get the log analysis
+     *
+     * @return Analysis|null
+     */
+    public function getAnalysis(): ?Analysis
+    {
+        $log = $this->getCodexLog();
+        if ($log instanceof AnalysableLogInterface) {
+            return $log->analyse();
+        }
+        return null;
     }
 }
