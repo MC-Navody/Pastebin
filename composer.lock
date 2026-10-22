@@ -4,7 +4,7 @@
     "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
     "This file is @generated automatically"
   ],
-  "content-hash": "46d10a38cd0fb7c295458036208b6c72",
+  "content-hash": "3eac96f486d8f0fa27c5ecfbcb60f5d5",
   "packages": [
     {
       "name": "aternos/codex",
